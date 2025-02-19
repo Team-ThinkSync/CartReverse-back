@@ -2,16 +2,12 @@ version: '3.9' # Compose 파일 버전
 services:
   mysql:
     image: mysql:latest
-    container_name: cartreverse
-    #    container_name: ${MYSQL_CONTAINER_NAME}
+    container_name: ${MYSQL_CONTAINER_NAME}
     environment:
-      #      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      #      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: mysql-cartreverse
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3307:3306"
-    #      - "${MYSQL_PORT}:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql-data:/var/lib/mysql
 

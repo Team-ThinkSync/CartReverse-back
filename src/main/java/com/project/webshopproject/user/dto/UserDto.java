@@ -1,6 +1,6 @@
-package com.project.webshopproject.dto;
+package com.project.webshopproject.user.dto;
 
-import com.project.webshopproject.entity.Grade;
+import com.project.webshopproject.user.entity.Grade;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
