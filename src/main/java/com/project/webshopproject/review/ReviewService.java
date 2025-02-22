@@ -1,5 +1,7 @@
 package com.project.webshopproject.review;
 
+import com.project.webshopproject.product.entity.Product;
+import com.project.webshopproject.product.repository.ProductRepository;
 import com.project.webshopproject.review.dto.ReviewRequestDto;
 import com.project.webshopproject.review.dto.ReviewResponseDto;
 import com.project.webshopproject.review.entity.Review;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,11 +33,14 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final ProductRepository productRepository;
     // 이미지 저장 경로 (Docker Volume 마운트 경로)
-    @Value("${image.upload.dir}")
+    @Value("${file.upload-dir}")
     private String imageUploadDir;
 
     public void createReview(Long productId, ReviewRequestDto requestDto, List<MultipartFile> images, User user) {
-        Product product = productRepository.findById(productId);
+        Product product = productRepository.findById(productId).orElseThrow(() -> {
+            log.error("제품을 찾지 못함 | request : {}", productId);
+            return new IllegalArgumentException("제품을 찾지 못했습니다.");
+        });;
         Review review = Review.builder()
                 .product(product)
                 .user(user)
@@ -53,7 +59,7 @@ public class ReviewService {
 
             // ReviewImage 엔티티 생성 및 저장
             ReviewImage reviewImage = ReviewImage.builder()
-                    .reviewId(review.getReviewId()) // 저장된 리뷰의 ID 설정
+                    .review(review) // 저장된 리뷰의 ID 설정
                     .image(imageUrl)
                     .orderNo(orderNo++) // 순서대로 번호 부여
                     .build();
@@ -76,18 +82,17 @@ public class ReviewService {
     }
 
     public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto) {
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("Review not found"));
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
+                new IllegalArgumentException("Review not found"));
         review.updateReview(requestDto.title(), requestDto.content(), requestDto.rate(), LocalDateTime.now());
         return new ReviewResponseDto(
-                review.reviewId(),
-                review.user().id(),
-                review.product().id(),
-                review.title(),
-                review.content(),
-                review.rate(),
-                review.createdAt(),
-                review.updatedAt(),
-                review.isPaid());
+                review.getReviewId(),
+                review.getUser().getUserId(),
+                review.getProduct().getProductId(),
+                review.getTitle(),
+                review.getContent(),
+                review.getRate(),
+                review.getCreatedAt());
     }
 
     public void deleteReview(Long reviewId) {

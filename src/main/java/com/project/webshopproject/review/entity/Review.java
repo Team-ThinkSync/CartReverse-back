@@ -1,6 +1,7 @@
 package com.project.webshopproject.review.entity;
 
 import com.project.webshopproject.common.TimeStamp;
+import com.project.webshopproject.product.entity.Product;
 import com.project.webshopproject.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
