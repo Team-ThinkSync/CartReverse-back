@@ -23,6 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReviewRestController {
     private final ReviewService reviewService;
 
+    /**
+     * 리뷰 추가
+     * @param productId 제품 고유번호
+     * @param requestDto 제목, 내용, 별점
+     * @param images 이미지
+     * @param userDetails
+     */
     @PostMapping("/products/{productId}/reviews")
     public ResponseEntity<RestApiResponseDto<String>> createReview(
             @PathVariable final Long productId,
@@ -35,6 +42,10 @@ public class ReviewRestController {
                 .body(RestApiResponseDto.of("리뷰가 등록되었습니다."));
     }
 
+    /**
+     * 리뷰 전체조회
+     * @param productId 제품 고유번호
+     */
     @GetMapping("/products/{productId}/reviews")
     public ResponseEntity<RestApiResponseDto<List<ReviewResponseDto>>> getAllReviews(
             @PathVariable Long productId
@@ -44,6 +55,11 @@ public class ReviewRestController {
                 .body(RestApiResponseDto.of("리뷰를 전체조회하였습니다.", responseDto));
     }
 
+    /**
+     * 리뷰 수정
+     * @param reviewId 리뷰 고유번호
+     * @param requestDto 제목, 내용, 별점
+     */
     @PatchMapping("/products/{productId}/reviews/{reviewId}")
     public ResponseEntity<RestApiResponseDto<String>> updateReview(
             @PathVariable Long reviewId,
@@ -53,6 +69,10 @@ public class ReviewRestController {
                 .body(RestApiResponseDto.of("리뷰가 수정되었습니다."));
     }
 
+    /**
+     * 리뷰 삭제
+     * @param reviewId 리뷰 고유번호
+     */
     @DeleteMapping("/products/{productId}/reviews/{reviewId}")
     public ResponseEntity<RestApiResponseDto<String>> deleteReview(@PathVariable Long reviewId) {
         reviewService.deleteReview(reviewId);

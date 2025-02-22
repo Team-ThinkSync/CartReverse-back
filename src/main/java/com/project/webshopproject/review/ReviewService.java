@@ -36,11 +36,13 @@ public class ReviewService {
     @Value("${file.upload-dir}")
     private String imageUploadDir;
 
+    @Transactional
     public void createReview(Long productId, ReviewRequestDto requestDto, List<MultipartFile> images, User user) {
         Product product = productRepository.findById(productId).orElseThrow(() -> {
             log.error("제품을 찾지 못함 | request : {}", productId);
             return new IllegalArgumentException("제품을 찾지 못했습니다.");
-        });;
+        });
+
         Review review = Review.builder()
                 .product(product)
                 .user(user)
@@ -52,20 +54,28 @@ public class ReviewService {
                 .build();
         reviewRepository.save(review);
 
+        if (images == null || images.isEmpty()) {
+            log.warn("이미지 없이 리뷰가 등록됨 | reviewId: {}", review.getReviewId());
+            return;
+        }
+
         int orderNo = 1;
         for (MultipartFile image : images) {
-            // 파일 저장 로직 (예시)
-            String imageUrl = saveImage(image); // 실제 파일 저장 및 URL 반환 로직 필요
-
-            // ReviewImage 엔티티 생성 및 저장
-            ReviewImage reviewImage = ReviewImage.builder()
-                    .review(review) // 저장된 리뷰의 ID 설정
-                    .image(imageUrl)
-                    .orderNo(orderNo++) // 순서대로 번호 부여
-                    .build();
-            reviewImageRepository.save(reviewImage);
+            try {
+                String imageUrl = saveImage(image);
+                ReviewImage reviewImage = ReviewImage.builder()
+                        .review(review)
+                        .image(imageUrl)
+                        .orderNo(orderNo++)
+                        .build();
+                reviewImageRepository.save(reviewImage);
+            } catch (Exception e) {
+                log.error("이미지 저장 실패 | reviewId: {}, error: {}", review.getReviewId(), e.getMessage());
+                throw new IllegalStateException("이미지 저장 중 오류가 발생했습니다.");
+            }
         }
     }
+
 
     public List<ReviewResponseDto> getAllReviews(Long productId) {
         return reviewRepository.findByProductId(productId)
