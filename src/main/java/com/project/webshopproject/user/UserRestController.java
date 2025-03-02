@@ -41,7 +41,7 @@ public class UserRestController {
      *
      * @param requestDto: email, username, nickname, phone_number, password, address
      */
-    @PostMapping("/user/signup")
+    @PostMapping("/users/signup")
     public ResponseEntity<RestApiResponseDto<String>> signup(
             @Valid @RequestBody final UserSignupRequestDto requestDto
     ) {
@@ -60,7 +60,7 @@ public class UserRestController {
      * @param requestDto: password, newPassword, confirmNewPassword
      * @param userDetails
      */
-    @PatchMapping("/user/password")
+    @PatchMapping("/users/password")
     public ResponseEntity<RestApiResponseDto<String>> changePassword(
             @Valid @RequestBody final UserChangePasswordRequestDto requestDto,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
@@ -80,7 +80,7 @@ public class UserRestController {
      * @param requestDto: password
      * @param userDetails
      */
-    @PatchMapping("/user/resign")
+    @PatchMapping("/users/resign")
     public ResponseEntity<RestApiResponseDto<String>> resign(
             @Valid @RequestBody final UserResignRequestDto requestDto,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
@@ -98,7 +98,7 @@ public class UserRestController {
     /**
      * 카카오 회원가입 콜백
      */
-    @GetMapping("/user/kakao/callback")
+    @GetMapping("/users/kakao/callback")
     public ResponseEntity<RestApiResponseDto<String>> kakaoLogin(@RequestParam final String code,
             HttpServletResponse response)
             throws JsonProcessingException {
@@ -133,7 +133,7 @@ public class UserRestController {
                 .body(responseBody);
     }
 
-    @PatchMapping("/user/kakao/signup")
+    @PatchMapping("/users/kakao/signup")
     public ResponseEntity<RestApiResponseDto<String>> completeSignup(
             @Valid @RequestBody final UserKakaoProfileUpdateRequestDto requestDto
     ) {

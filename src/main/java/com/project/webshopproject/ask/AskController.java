@@ -1,8 +1,7 @@
-package com.project.webshopproject.controller;
+package com.project.webshopproject.ask;
 
-import com.project.webshopproject.dto.AskRequestDto;
-import com.project.webshopproject.model.Ask;
-import com.project.webshopproject.service.AskService;
+import com.project.webshopproject.ask.dto.AskRequestDto;
+import com.project.webshopproject.ask.entity.Ask;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
