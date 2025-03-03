@@ -108,43 +108,44 @@ public class ProductService {
         return savedImageUrls;
     }
 
-//    @Transactional
-//    public void updateProduct(Long productId, ProductUpdateRequestDto productUpdateRequestDto, List<MultipartFile> images) {
-//        Product updateProduct = productRepository.findById(productId)
-//                .orElseThrow(() -> new IllegalArgumentException("수정할 상품을 찾을 수 없습니다."));
-//
-//        ProductCategory updateCategory = productCategoryRepository.findByName(productUpdateRequestDto.categoryName());
-//
-//        try {
-//            updateProduct.updateProduct(
-//                    productId,
-//                    updateCategory,
-//                    productUpdateRequestDto.productName(),
-//                    productUpdateRequestDto.productPrice(),
-//                    productUpdateRequestDto.productStock(),
-//                    productUpdateRequestDto.categoryType()
-//            );
-//            productImageRepository.deleteByProduct_ProductId(productId);
-//
-//            List<String> savedImageUrls = saveImage(images);
-//            List<ProductImage> newProductImages = new ArrayList<>();
-//
-//            for (int i = 0; i < savedImageUrls.size(); i++) {
-//                ProductImage productImage = ProductImage.builder()
-//                        .image(savedImageUrls.get(i))
-//                        .isMain(i == 0)
-//                        .orderNo(i + 1)
-//                        .product(updateProduct)
-//                        .build();
-//                newProductImages.add(productImage);
-//            }
-//            productImageRepository.saveAll(newProductImages);
-//            productRepository.save(updateProduct);
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("상품 수정에 실패했습니다.", e);
-//        }
-//    }
+    //상품 수정
+    @Transactional
+    public void updateProduct(Long productId, ProductUpdateRequestDto productUpdateRequestDto, List<MultipartFile> images) {
+        Product updateProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("수정할 상품을 찾을 수 없습니다."));
+
+        ProductCategory updateCategory = productCategoryRepository.findByName(productUpdateRequestDto.categoryName());
+
+        try {
+            updateProduct.updateProduct(
+                    productId,
+                    updateCategory,
+                    productUpdateRequestDto.productName(),
+                    productUpdateRequestDto.productPrice(),
+                    productUpdateRequestDto.productStock(),
+                    productUpdateRequestDto.categoryType()
+            );
+            productImageRepository.deleteByProduct_ProductId(productId);
+
+            List<String> savedImageUrls = saveImage(images);
+            List<ProductImage> newProductImages = new ArrayList<>();
+
+            for (int i = 0; i < savedImageUrls.size(); i++) {
+                ProductImage productImage = ProductImage.builder()
+                        .image(savedImageUrls.get(i))
+                        .isMain(i == 0)
+                        .orderNo(i + 1)
+                        .product(updateProduct)
+                        .build();
+                newProductImages.add(productImage);
+            }
+            productImageRepository.saveAll(newProductImages);
+            productRepository.save(updateProduct);
+
+        } catch (Exception e) {
+            throw new RuntimeException("상품 수정에 실패했습니다.", e);
+        }
+    }
 
 
     // 상품 삭제

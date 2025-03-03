@@ -40,13 +40,13 @@ public class ProductController {
     }
 
     // 상품 수정
-//    @PatchMapping("/product/{productId}")
-//    public ResponseEntity<String> updateProduct(@PathVariable Long productId,
-//                                                                 @RequestPart("dto") ProductUpdateRequestDto productUpdateRequestDto,
-//                                                                 @RequestPart(value = "image") final List<MultipartFile> images){
-//        productService.updateProduct(productId, productUpdateRequestDto, images);
-//        return ResponseEntity.ok("상품 수정에 성공하였습니다");
-//    }
+    @PatchMapping("/product/{productId}")
+    public ResponseEntity<String> updateProduct(@PathVariable Long productId,
+                                                                 @RequestPart("dto") ProductUpdateRequestDto productUpdateRequestDto,
+                                                                 @RequestPart(value = "image") final List<MultipartFile> images){
+        productService.updateProduct(productId, productUpdateRequestDto, images);
+        return ResponseEntity.ok("상품 수정에 성공하였습니다");
+    }
     // 상품 삭제
     @DeleteMapping("product/{productId}")
     public ResponseEntity<String> deleteItem(@PathVariable("productId") Long productId){
