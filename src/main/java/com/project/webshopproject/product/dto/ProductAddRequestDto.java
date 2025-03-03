@@ -7,8 +7,7 @@ public record ProductAddRequestDto(
         CategoryType categoryType,
         String productName,
         Integer productPrice,
-        Integer productStock,
-        Long productImgId
+        Integer productStock
 
 ) {
 }
