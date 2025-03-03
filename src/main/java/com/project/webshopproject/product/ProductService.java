@@ -42,9 +42,9 @@ public class ProductService {
     }
 
     //카테고리별 조회 api 추가
-//    public List<ProductByCategoryResponseDto> getProductByCategory(Long categoryId){
-//        return productQueryRepository.getProductByCategory(categoryId);
-//    }
+    public List<ProductByCategoryResponseDto> getProductByCategory(Long categoryId){
+        return productQueryRepository.getProductByCategory(categoryId);
+    }
 
      // 세부 상품 조회
      public ProductFindResponseDto getProductById(Long productId) {

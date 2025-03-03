@@ -82,19 +82,19 @@ public class ProductQueryRepository {
     }
 
     //카테 고리 별 조회
-//    public List<ProductByCategoryResponseDto> getProductByCategory(Long categoryId){
-//        return jpaQueryFactory.select(new QProductByCategoryResponseDto(
-//                product.name,
-//                product.price,
-//                product.stock,
-//                productImage.image
-//        ))
-//                .from(product)
-//                .leftJoin(productImage)
-//                .on(productImage.product.productId.eq(product.productId)
-//                        .and(productImage.isMain.isTrue()))
-//                .where(product.category.categoryId.eq(categoryId))
-//                .fetch();
-//    }
+    public List<ProductByCategoryResponseDto> getProductByCategory(Long categoryId){
+        return jpaQueryFactory.select(new QProductByCategoryResponseDto(
+                product.name,
+                product.price,
+                product.stock,
+                productImage.image
+        ))
+                .from(product)
+                .leftJoin(productImage)
+                .on(productImage.product.productId.eq(product.productId)
+                        .and(productImage.isMain.isTrue()))
+                .where(product.category.categoryId.eq(categoryId))
+                .fetch();
+    }
 
 }

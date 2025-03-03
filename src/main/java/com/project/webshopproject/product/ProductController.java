@@ -26,11 +26,11 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
     //카테고리 별 조회
-//    @GetMapping("/category/{categoryId}")
-//    public ResponseEntity<List<ProductByCategoryResponseDto>> getProductByCategory(@PathVariable("categoryId") Long categoryId){
-//        List<ProductByCategoryResponseDto> product = productService.getProductByCategory(categoryId);
-//        return ResponseEntity.ok(product);
-//    }
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductByCategoryResponseDto>> getProductByCategory(@PathVariable("categoryId") Long categoryId){
+        List<ProductByCategoryResponseDto> product = productService.getProductByCategory(categoryId);
+        return ResponseEntity.ok(product);
+    }
     //상품 추가
     @PostMapping("/product")
     public ResponseEntity<String> addProduct(@RequestPart("dto") ProductAddRequestDto productAddRequestDto,
