@@ -37,12 +37,12 @@ public class Ask {
     private AskStatus askStatus;
 
     // 모든 필드를 초기화하는 생성자 추가
-    public Ask(Long userId, String title, String content, String category, String itemId) {
+    public Ask(Long userId, String title, String content, String category, Long itemId) {
         this.userId = userId;
         this.title = title;
         this.content = content;
         this.category = category;
-        this.itemId = Long.valueOf(itemId);
+        this.itemId = itemId;
         this.askStatus = ANSWERED; // 기본값 설정
     }
 

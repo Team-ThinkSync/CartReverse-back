@@ -46,14 +46,13 @@ public class AskService {
     }
 
     public List<Ask> getAsksByUserID(Long userID) {
-        return askRepo.findByUserID(userID);
+        return askRepo.findByUserId(userID);
     }
 
     public AskRequestDto getAskDetail(Long askId, Long userId) {
         Ask asks = getAsksByIdAndUserID(askId, userId);
         return new AskRequestDto(
                 userId,
-                "문의내용 가져오기 성공",
                 asks.getTitle(),
                 asks.getContent(),
                 asks.getCategory(),
@@ -63,7 +62,7 @@ public class AskService {
 
     // 특정 문의사항 세부 조회
     public Ask getAsksByIdAndUserID(Long id, Long userID) {
-        return askRepo.findByIdAndUserID(id, userID)
+        return askRepo.findByIdAndUserId(id, userID)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
     }
 
