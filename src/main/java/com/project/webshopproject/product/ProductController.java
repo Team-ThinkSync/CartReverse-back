@@ -1,8 +1,6 @@
 package com.project.webshopproject.product;
 
-import com.project.webshopproject.product.dto.ProductAddRequestDto;
-import com.project.webshopproject.product.dto.ProductFindResponseDto;
-import com.project.webshopproject.product.dto.ProductResponseDto;
+import com.project.webshopproject.product.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +25,12 @@ public class ProductController {
         ProductFindResponseDto product = productService.getProductById(productId);
         return ResponseEntity.ok(product);
     }
+    //카테고리 별 조회
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductByCategoryResponseDto>> getProductByCategory(@PathVariable("categoryId") Long categoryId){
+        List<ProductByCategoryResponseDto> product = productService.getProductByCategory(categoryId);
+        return ResponseEntity.ok(product);
+    }
     //상품 추가
     @PostMapping("/product")
     public ResponseEntity<String> addProduct(@RequestPart("dto") ProductAddRequestDto productAddRequestDto,
@@ -35,14 +39,16 @@ public class ProductController {
         return ResponseEntity.ok("상품추가에 성공하였습니다");
     }
 
-//    @PatchMapping("/products/{productId}") // 상품 수정
-//    public ResponseEntity<ItemEditDto> editItem(@PathVariable Long itemId,
-//                                                @RequestPart("dto") ItemEditDto itemEditDto,
-//                                                @RequestPart(value = "image") final List<MultipartFile> images){
-//        ItemEditDto updatedItem = itemService.editItem(itemId,itemEditDto, image);
-//        return ResponseEntity.ok(updatedItem);
-//    }
-    @DeleteMapping("product/{productId}") // 상품 삭제
+    // 상품 수정
+    @PatchMapping("/product/{productId}")
+    public ResponseEntity<String> updateProduct(@PathVariable Long productId,
+                                                                 @RequestPart("dto") ProductUpdateRequestDto productUpdateRequestDto,
+                                                                 @RequestPart(value = "image") final List<MultipartFile> images){
+        productService.updateProduct(productId, productUpdateRequestDto, images);
+        return ResponseEntity.ok("상품 수정에 성공하였습니다");
+    }
+    // 상품 삭제
+    @DeleteMapping("product/{productId}")
     public ResponseEntity<String> deleteItem(@PathVariable("productId") Long productId){
         productService.deleteProduct(productId);
         return ResponseEntity.ok("상품삭제에 성공하였습니다");
