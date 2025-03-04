@@ -1,11 +1,9 @@
-package com.project.webshopproject.service;
+package com.project.webshopproject.ask;
 
-import com.project.webshopproject.model.Ask;
-import com.project.webshopproject.model.Status;
+import com.project.webshopproject.ask.entity.Ask;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.project.webshopproject.dto.AskRequestDto;
-import com.project.webshopproject.repository.AskRepository;
+import com.project.webshopproject.ask.dto.AskRequestDto;
 
 import java.util.List;
 

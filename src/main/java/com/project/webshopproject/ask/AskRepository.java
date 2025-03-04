@@ -1,6 +1,6 @@
-package com.project.webshopproject.repository;
+package com.project.webshopproject.ask;
 
-import com.project.webshopproject.model.Ask;
+import com.project.webshopproject.ask.entity.Ask;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

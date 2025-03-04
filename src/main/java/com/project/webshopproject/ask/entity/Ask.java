@@ -1,8 +1,8 @@
-package com.project.webshopproject.model;
+package com.project.webshopproject.ask.entity;
 
 import jakarta.persistence.*;
 
-import static com.project.webshopproject.model.Status.ANSWERED;
+import static com.project.webshopproject.ask.entity.AskStatus.ANSWERED;
 
 @Entity
 public class Ask {
@@ -34,7 +34,7 @@ public class Ask {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private AskStatus askStatus;
 
     // 모든 필드를 초기화하는 생성자 추가
     public Ask(Long userId, String title, String content, String category, String itemId) {
@@ -43,7 +43,7 @@ public class Ask {
         this.content = content;
         this.category = category;
         this.itemId = Long.valueOf(itemId);
-        this.status = ANSWERED; // 기본값 설정
+        this.askStatus = ANSWERED; // 기본값 설정
     }
 
     // Getter
@@ -79,8 +79,8 @@ public class Ask {
         return answer;
     }
 
-    public Status getStatus() {
-        return status;
+    public AskStatus getStatus() {
+        return askStatus;
     }
 
     // 응답 설정 메서드
@@ -90,6 +90,6 @@ public class Ask {
 
     public void setAnswer(String answer) {
         this.answer = answer;
-        this.status = ANSWERED; // 답변이 설정되면 상태를 ANSWERED로 변경
+        this.askStatus = ANSWERED; // 답변이 설정되면 상태를 ANSWERED로 변경
     }
 }
