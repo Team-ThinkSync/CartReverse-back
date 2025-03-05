@@ -1,5 +1,6 @@
 package com.project.webshopproject.user;
 
+import com.project.webshopproject.user.dto.MyPageResponseDto;
 import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
 import com.project.webshopproject.user.dto.UserResignRequestDto;
 import com.project.webshopproject.user.dto.UserSignupRequestDto;
@@ -70,5 +71,10 @@ public class UserService {
             log.error("사용자를 찾지 못함 | request : {}", email);
             return new UsernameNotFoundException("사용자를 찾지 못했습니다.");
         });
+    }
+
+    public MyPageResponseDto myPageResponseDto(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("사용자가 존재하지않습니다."));
+        return new MyPageResponseDto(user);
     }
 }
