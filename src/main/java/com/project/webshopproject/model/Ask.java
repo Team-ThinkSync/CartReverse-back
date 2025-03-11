@@ -36,13 +36,16 @@ public class Ask {
     @Column(nullable = false)
     private Status status;
 
+    private String imageUrl;
+
     // 모든 필드를 초기화하는 생성자 추가
-    public Ask(Long userId, String title, String content, String category, String itemId) {
+    public Ask(Long userId, String title, String content, String category, String itemId, String imageUrl) {
         this.userId = userId;
         this.title = title;
         this.content = content;
         this.category = category;
         this.itemId = Long.valueOf(itemId);
+        this.imageUrl = imageUrl;
         this.status = ANSWERED; // 기본값 설정
     }
 
@@ -86,6 +89,10 @@ public class Ask {
     // 응답 설정 메서드
     public void setAdminResponse(String adminResponse) {
         this.adminResponse = adminResponse;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public void setAnswer(String answer) {
