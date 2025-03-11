@@ -1,11 +1,10 @@
 package com.project.webshopproject.service;
 
+import com.project.webshopproject.dto.AskRequestDto;
 import com.project.webshopproject.model.Ask;
-import com.project.webshopproject.model.Status;
+import com.project.webshopproject.repository.AskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.project.webshopproject.dto.AskRequestDto;
-import com.project.webshopproject.repository.AskRepository;
 
 import java.util.List;
 
@@ -20,7 +19,8 @@ public class AskService {
                 askRequest.getTitle(),
                 askRequest.getContent(),
                 askRequest.getCategory(),
-                askRequest.getItemId()
+                askRequest.getItemId(),
+                askRequest.getImageUrl()
         );
         return askRepo.save(ask);
     }
@@ -59,7 +59,8 @@ public class AskService {
                 asks.getTitle(),
                 asks.getContent(),
                 asks.getCategory(),
-                asks.getItemId()
+                asks.getItemId(),
+                asks.getImageUrl()
         );
     }
 

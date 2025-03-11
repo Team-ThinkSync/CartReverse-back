@@ -82,6 +82,7 @@ public class AskController {
         response.put("content", updatedAsk.getContent());
         response.put("category", updatedAsk.getCategory());
         response.put("itemId", updatedAsk.getItemId());
+        response.put("imageUrl", updatedAsk.getImageUrl());
         response.put("answer", updatedAsk.getAnswer());
 
         return ResponseEntity.ok(response);
