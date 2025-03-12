@@ -1,13 +1,13 @@
-package com.project.webshopproject.service;
+package com.project.webshopproject.email;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RedisService {
-
-    @Autowired
     private StringRedisTemplate redisTemplate;
 
     // 인증번호를 Redis에 저장

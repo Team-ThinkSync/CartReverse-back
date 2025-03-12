@@ -1,5 +1,6 @@
-package com.project.webshopproject.service;
+package com.project.webshopproject.email;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,12 +11,9 @@ import jakarta.mail.internet.MimeMessage;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
-
-    @Autowired
     private JavaMailSender mailSender;
-
-    @Autowired
     private RedisService redisService;  // Redis 서비스
 
     // 인증번호를 생성하고 이메일을 전송하는 메소드

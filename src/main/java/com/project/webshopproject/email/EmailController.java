@@ -1,21 +1,20 @@
-package com.project.webshopproject.controller;
+package com.project.webshopproject.email;
 
-import com.project.webshopproject.service.RedisService;
 import com.project.webshopproject.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 public class EmailController {
-
     private RedisService redisService;
-
-    private com.project.webshopproject.user.UserService userService;
+    private UserService userService;
 
     @PostMapping("/auth/forget-email")
-    public String findEmail(@RequestParam String userName, @RequestParam String phoneNumber, @RequestParam String code) {
+    public String findEmail(@RequestParam String userName, @RequestParam String phoneNumber,
+            @RequestParam String code) {
         // 인증번호 검증
         String storedCode = redisService.getVerificationCode(phoneNumber);
         if (storedCode != null && storedCode.equals(code)) {

@@ -1,20 +1,20 @@
-package com.project.webshopproject.controller;
+package com.project.webshopproject.auth;
 
-import com.project.webshopproject.service.EmailService;
-import com.project.webshopproject.service.RedisService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
+import com.project.webshopproject.email.EmailService;
+import com.project.webshopproject.email.RedisService;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
     private EmailService emailService;
-
-    @Autowired
     private RedisService redisService;
 
     // 이메일로 인증번호 전송
