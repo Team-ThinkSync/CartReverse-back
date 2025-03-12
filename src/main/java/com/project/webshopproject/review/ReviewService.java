@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -86,14 +87,54 @@ public class ReviewService {
                         review.getTitle(),
                         review.getContent(),
                         review.getRate(),
-                        review.getCreatedAt()))
+                        review.getCreatedAt(),
+                        review.getReviewImages().stream()
+                                .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
+                                .map(ReviewImage::getImage)
+                                .collect(Collectors.toList())
+                ))
                 .collect(Collectors.toList());
     }
 
-    public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto) {
+    @Transactional
+    public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, List<MultipartFile> newImages, List<Long> deleteImageIds) {
+        // 리뷰 찾기
         Review review = reviewRepository.findById(reviewId).orElseThrow(() ->
                 new IllegalArgumentException("Review not found"));
-        review.updateReview(requestDto.title(), requestDto.content(), requestDto.rate(), LocalDateTime.now());
+
+        // 제목, 내용, 별점 중 변경된 값만 업데이트
+        if (requestDto.title() != null) review.updateTitle(requestDto.title());
+        if (requestDto.content() != null) review.updateContent(requestDto.content());
+        if (requestDto.rate() != null) {
+            review.updateRate(requestDto.rate());
+        }
+
+        // 삭제할 이미지 처리
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            reviewImageRepository.deleteAllById(deleteImageIds);
+        }
+
+        // 새 이미지 추가
+        if (newImages != null && !newImages.isEmpty()) {
+            int nextOrderNo = review.getReviewImages().size() + 1;
+            for (MultipartFile image : newImages) {
+                String imageUrl = saveImage(image);
+                ReviewImage reviewImage = ReviewImage.builder()
+                        .review(review)
+                        .image(imageUrl)
+                        .orderNo(nextOrderNo++)
+                        .build();
+                reviewImageRepository.save(reviewImage);
+            }
+        }
+
+        // 최신 리뷰 이미지 리스트 가져오기 (orderNo 기준 정렬)
+        List<String> imageUrls = review.getReviewImages().stream()
+                .sorted(Comparator.comparingInt(ReviewImage::getOrderNo))
+                .map(ReviewImage::getImage)
+                .collect(Collectors.toList());
+
+        // ReviewResponseDto 반환
         return new ReviewResponseDto(
                 review.getReviewId(),
                 review.getUser().getUserId(),
@@ -101,7 +142,9 @@ public class ReviewService {
                 review.getTitle(),
                 review.getContent(),
                 review.getRate(),
-                review.getCreatedAt());
+                review.getCreatedAt(),
+                imageUrls
+        );
     }
 
     public void deleteReview(Long reviewId) {
