@@ -4,6 +4,7 @@ import com.project.webshopproject.common.RestApiResponseDto;
 import com.project.webshopproject.review.dto.ReviewRequestDto;
 import com.project.webshopproject.review.dto.ReviewResponseDto;
 import com.project.webshopproject.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -62,9 +63,14 @@ public class ReviewRestController {
      */
     @PatchMapping("/products/{productId}/reviews/{reviewId}")
     public ResponseEntity<RestApiResponseDto<String>> updateReview(
+            @PathVariable Long productId,
             @PathVariable Long reviewId,
-            @RequestPart("dto") ReviewRequestDto requestDto) {
-        reviewService.updateReview(reviewId, requestDto);
+            @Valid @RequestPart("dto") ReviewRequestDto requestDto, // @Valid로 검증 활성화
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestPart(value = "deleteImageIds", required = false) List<Long> deleteImageIds) {
+
+        reviewService.updateReview(reviewId, requestDto, newImages, deleteImageIds);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(RestApiResponseDto.of("리뷰가 수정되었습니다."));
     }
