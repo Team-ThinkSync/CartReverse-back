@@ -11,5 +11,15 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+  redis:
+    image: redis:alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    restart: always
+    volumes:
+      - redis-data:/data
+
 volumes:
   mysql-data:
+  redis-data:

@@ -1,10 +1,22 @@
 package com.project.webshopproject.ask.entity;
 
-import jakarta.persistence.*;
-
 import static com.project.webshopproject.ask.entity.AskStatus.ANSWERED;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Getter
+@Table(name = "asks")
+@NoArgsConstructor
 public class Ask {
 
     @Id
@@ -37,55 +49,13 @@ public class Ask {
     private AskStatus askStatus;
 
     // 모든 필드를 초기화하는 생성자 추가
-    public Ask(Long userId, String title, String content, String category, String itemId) {
+    public Ask(Long userId, String title, String content, String category, Long itemId) {
         this.userId = userId;
         this.title = title;
         this.content = content;
         this.category = category;
-        this.itemId = Long.valueOf(itemId);
+        this.itemId = itemId;
         this.askStatus = ANSWERED; // 기본값 설정
-    }
-
-    // Getter
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public Long getItemId() {
-        return itemId;
-    }
-
-    public String getAdminResponse() {
-        return adminResponse;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public AskStatus getStatus() {
-        return askStatus;
-    }
-
-    // 응답 설정 메서드
-    public void setAdminResponse(String adminResponse) {
-        this.adminResponse = adminResponse;
     }
 
     public void setAnswer(String answer) {
