@@ -1,0 +1,40 @@
+package com.project.webshopproject.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.util.Properties;
+
+@Configuration
+public class EmailConfig {
+
+    @Value("${MAIL_USERNAME}")
+    private String mailUsername;
+
+    @Value("${MAIL_PASSWORD}")
+    private String mailPassword;
+
+    @Bean
+    public JavaMailSender javaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        // Gmail SMTP 서버 설정
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
+        mailSender.setUsername(mailUsername);
+        mailSender.setPassword(mailPassword);
+
+        // 추가적인 속성 설정
+        Properties properties = mailSender.getJavaMailProperties();
+        properties.put("mail.transport.protocol", "smtp");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.starttls.required", "true");
+        properties.put("mail.debug", "true");
+
+        return mailSender;
+    }
+}

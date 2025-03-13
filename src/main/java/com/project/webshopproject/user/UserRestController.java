@@ -1,16 +1,9 @@
 package com.project.webshopproject.user;
 
-import static com.project.webshopproject.security.JwtProvider.AUTHORIZATION_HEADER;
-import static com.project.webshopproject.security.JwtProvider.REFRESHTOKEN_HEADER;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.project.webshopproject.user.dto.KakaoUserInfoDto;
-import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
-import com.project.webshopproject.user.dto.UserKakaoProfileUpdateRequestDto;
-import com.project.webshopproject.user.dto.UserResignRequestDto;
-import com.project.webshopproject.user.dto.UserSignupRequestDto;
 import com.project.webshopproject.common.RestApiResponseDto;
 import com.project.webshopproject.security.UserDetailsImpl;
+import com.project.webshopproject.user.dto.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.project.webshopproject.security.JwtProvider.AUTHORIZATION_HEADER;
+import static com.project.webshopproject.security.JwtProvider.REFRESHTOKEN_HEADER;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +32,7 @@ public class UserRestController {
      *
      * @param requestDto: email, username, nickname, phone_number, password, address
      */
-    @PostMapping("/user/signup")
+    @PostMapping("/users/signup")
     public ResponseEntity<RestApiResponseDto<String>> signup(
             @Valid @RequestBody final UserSignupRequestDto requestDto
     ) {
@@ -60,7 +51,7 @@ public class UserRestController {
      * @param requestDto: password, newPassword, confirmNewPassword
      * @param userDetails
      */
-    @PatchMapping("/user/password")
+    @PatchMapping("/users/password")
     public ResponseEntity<RestApiResponseDto<String>> changePassword(
             @Valid @RequestBody final UserChangePasswordRequestDto requestDto,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
@@ -80,7 +71,7 @@ public class UserRestController {
      * @param requestDto: password
      * @param userDetails
      */
-    @PatchMapping("/user/resign")
+    @PatchMapping("/users/resign")
     public ResponseEntity<RestApiResponseDto<String>> resign(
             @Valid @RequestBody final UserResignRequestDto requestDto,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
@@ -98,7 +89,7 @@ public class UserRestController {
     /**
      * 카카오 회원가입 콜백
      */
-    @GetMapping("/user/kakao/callback")
+    @GetMapping("/users/kakao/callback")
     public ResponseEntity<RestApiResponseDto<String>> kakaoLogin(@RequestParam final String code,
             HttpServletResponse response)
             throws JsonProcessingException {
@@ -133,7 +124,7 @@ public class UserRestController {
                 .body(responseBody);
     }
 
-    @PatchMapping("/user/kakao/signup")
+    @PatchMapping("/users/kakao/signup")
     public ResponseEntity<RestApiResponseDto<String>> completeSignup(
             @Valid @RequestBody final UserKakaoProfileUpdateRequestDto requestDto
     ) {
