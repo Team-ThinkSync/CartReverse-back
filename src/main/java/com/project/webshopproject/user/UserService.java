@@ -73,8 +73,13 @@ public class UserService {
         });
     }
 
-    public MyPageResponseDto myPageResponseDto(Long userId){
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("사용자가 존재하지않습니다."));
+    public MyPageResponseDto myPageResponseDto(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지않습니다."));
         return new MyPageResponseDto(user);
+    }
+    public String findEmailByUserNameAndPhoneNumber(String userName, String phoneNumber) {
+        return userRepository.findByUserNameAndPhoneNumber(userName, phoneNumber)
+                .map(User::getEmail)
+                .orElse(null);
     }
 }
