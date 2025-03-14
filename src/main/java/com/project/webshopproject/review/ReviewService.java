@@ -1,5 +1,7 @@
 package com.project.webshopproject.review;
 
+import com.project.webshopproject.like.entity.LikeType;
+import com.project.webshopproject.like.repository.LikeRepository;
 import com.project.webshopproject.product.entity.Product;
 import com.project.webshopproject.product.repository.ProductRepository;
 import com.project.webshopproject.review.dto.ReviewRequestDto;
@@ -32,6 +34,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewImageRepository reviewImageRepository;
     private final ProductRepository productRepository;
+    private final LikeRepository likeRepository;
     // 이미지 저장 경로 (Docker Volume 마운트 경로)
     @Value("${file.upload-dir}")
     private String imageUploadDir;
@@ -77,24 +80,51 @@ public class ReviewService {
     }
 
 
+//    public List<ReviewResponseDto> getAllReviews(Long productId) {
+//        return reviewRepository.findByProduct_ProductId(productId)
+//                .stream()
+//                .map(review -> new ReviewResponseDto(
+//                        review.getReviewId(),
+//                        review.getUser().getUserId(),
+//                        review.getProduct().getProductId(),
+//                        review.getTitle(),
+//                        review.getContent(),
+//                        review.getRate(),
+//                        review.getCreatedAt(),
+//                        review.getReviewImages().stream()
+//                                .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
+//                                .map(ReviewImage::getImage)
+//                                .collect(Collectors.toList())
+//
+//                ))
+//                .collect(Collectors.toList());
+//    }
+
     public List<ReviewResponseDto> getAllReviews(Long productId) {
         return reviewRepository.findByProduct_ProductId(productId)
                 .stream()
-                .map(review -> new ReviewResponseDto(
-                        review.getReviewId(),
-                        review.getUser().getUserId(),
-                        review.getProduct().getProductId(),
-                        review.getTitle(),
-                        review.getContent(),
-                        review.getRate(),
-                        review.getCreatedAt(),
-                        review.getReviewImages().stream()
-                                .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
-                                .map(ReviewImage::getImage)
-                                .collect(Collectors.toList())
-                ))
+                .map(review -> {
+                    // 각 리뷰에 대해 좋아요 수를 개별적으로 계산
+                    Long likeCount = likeRepository.countByReviewId(review.getReviewId());
+
+                    return new ReviewResponseDto(
+                            review.getReviewId(),
+                            review.getUser().getUserId(),
+                            review.getProduct().getProductId(),
+                            review.getTitle(),
+                            review.getContent(),
+                            review.getRate(),
+                            review.getCreatedAt(),
+                            review.getReviewImages().stream()
+                                    .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
+                                    .map(ReviewImage::getImage)
+                                    .collect(Collectors.toList()),
+                            likeCount // 각 리뷰에 대한 좋아요 수 추가
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
 
     @Transactional
     public ReviewResponseDto updateReview(Long reviewId, ReviewRequestDto requestDto, List<MultipartFile> newImages, List<Long> deleteImageIds) {
@@ -134,6 +164,8 @@ public class ReviewService {
                 .map(ReviewImage::getImage)
                 .collect(Collectors.toList());
 
+        Long likeCount = likeRepository.countByReviewId(reviewId);
+
         // ReviewResponseDto 반환
         return new ReviewResponseDto(
                 review.getReviewId(),
@@ -143,7 +175,8 @@ public class ReviewService {
                 review.getContent(),
                 review.getRate(),
                 review.getCreatedAt(),
-                imageUrls
+                imageUrls,
+                likeCount
         );
     }
 
