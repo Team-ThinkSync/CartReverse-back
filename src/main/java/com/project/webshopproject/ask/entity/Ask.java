@@ -1,17 +1,11 @@
 package com.project.webshopproject.ask.entity;
 
-import static com.project.webshopproject.ask.entity.AskStatus.ANSWERED;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.project.webshopproject.product.entity.Product;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.project.webshopproject.ask.entity.AskStatus.ANSWERED;
 
 @Entity
 @Getter
@@ -35,8 +29,9 @@ public class Ask {
     @Column(nullable = false, length = 50)
     private String category;
 
-    @Column(length = 20)
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY) //Product와 직접적으로 연결
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(length = 500)
     private String adminResponse;
@@ -44,17 +39,22 @@ public class Ask {
     @Column(length = 500)
     private String answer;
 
+    @Column(length = 500)
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AskStatus askStatus;
 
-    // 모든 필드를 초기화하는 생성자 추가
-    public Ask(Long userId, String title, String content, String category, Long itemId) {
+    // 모든 필드를 초기화하는 생성자
+    public Ask(Long userId, String title, String content, String category, Product product, String imageUrl, String adminResponse) {
         this.userId = userId;
         this.title = title;
         this.content = content;
         this.category = category;
-        this.itemId = itemId;
+        this.product = product;
+        this.imageUrl = imageUrl;
+        this.adminResponse = adminResponse;
         this.askStatus = ANSWERED; // 기본값 설정
     }
 

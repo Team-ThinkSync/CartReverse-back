@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface AskRepository extends JpaRepository<Ask, Long>{
+public interface AskRepository extends JpaRepository<Ask, Long> {
     List<Ask> findByUserId(Long userId);
     Optional<Ask> findByIdAndUserId(Long id, Long userId);
 }

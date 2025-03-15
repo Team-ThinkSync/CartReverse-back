@@ -11,5 +11,5 @@ public class AskResponseDto {
     private final String title;
     private final String content;
     private final String category;
-    private final Long itemId;
+    private final Long productId;
 }
