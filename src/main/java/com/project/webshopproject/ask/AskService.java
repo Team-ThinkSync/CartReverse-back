@@ -2,6 +2,8 @@ package com.project.webshopproject.ask;
 
 import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.ask.entity.Ask;
+import com.project.webshopproject.product.entity.Product;
+import com.project.webshopproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +13,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AskService {
     private final AskRepository askRepository;
+    private final ProductRepository productRepository;
 
     public Ask createAsk(AskRequestDto askRequest) {
+        Product product = productRepository.findById(askRequest.getProductId())
+                .orElseThrow(() -> new RuntimeException("해당 Product가 존재하지 않습니다."));
+
         Ask ask = new Ask(
-                askRequest.getUserID(),
+                askRequest.getUserId(),
                 askRequest.getTitle(),
                 askRequest.getContent(),
                 askRequest.getCategory(),
-                askRequest.getItemId()
+                product
         );
         return askRepository.save(ask);
     }
@@ -38,10 +44,10 @@ public class AskService {
         askRepository.deleteById(id);
     }
 
-    public Ask addAdminResponse(Long id, String responese) {
+    public Ask addAdminResponse(Long id, String response) {
         Ask ask = askRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("문의가 존재하지 않습니다."));
-        ask.setAdminResponse(responese);
+        ask.setAdminResponse(response);
         return askRepository.save(ask);
     }
 
@@ -50,14 +56,13 @@ public class AskService {
     }
 
     public AskRequestDto getAskDetail(Long askId, Long userId) {
-        Ask asks = getAsksByIdAndUserID(askId, userId);
+        Ask ask = getAsksByIdAndUserID(askId, userId);
         return new AskRequestDto(
                 userId,
-                "문의내용 가져오기 성공",
-                asks.getTitle(),
-                asks.getContent(),
-                asks.getCategory(),
-                asks.getItemId()
+                ask.getTitle(),
+                ask.getContent(),
+                ask.getCategory(),
+                ask.getProduct().getProductId() // 수정된 부분
         );
     }
 
@@ -68,18 +73,13 @@ public class AskService {
     }
 
     public Ask addAnswerToAsk(Long id, String answer) {
-        // ID로 문의사항 조회
         Ask ask = askRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
-
-        // 답변 설정
         ask.setAnswer(answer);
-
-        // 저장 후 반환
         return askRepository.save(ask);
     }
 
-    public List<Ask> getAllasks() {
+    public List<Ask> getAllAsks() { // 메서드명 수정
         return askRepository.findAll();
     }
 }

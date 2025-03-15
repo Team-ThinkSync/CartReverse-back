@@ -80,7 +80,7 @@ public class AskController {
         response.put("title", updatedAsk.getTitle());
         response.put("content", updatedAsk.getContent());
         response.put("category", updatedAsk.getCategory());
-        response.put("itemId", updatedAsk.getItemId());
+        response.put("itemId", updatedAsk.getProduct().getProductId());
         response.put("imageUrl", updatedAsk.getImageUrl());
         response.put("answer", updatedAsk.getAnswer());
 
