@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public class AskRequestDto {
@@ -25,4 +27,6 @@ public class AskRequestDto {
 
     @NotNull(message = "Product ID는 null일 수 없습니다.")
     private final Long productId;
+
+    private List<String> imageUrls;
 }
