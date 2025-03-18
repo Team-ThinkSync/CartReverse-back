@@ -23,7 +23,7 @@ public class AskRequestDto {
     private final String content;
 
     @NotBlank(message = "Category는 비어 있을 수 없습니다.")
-    private final String category;
+    private final Enum category;
 
     @NotNull(message = "Product ID는 null일 수 없습니다.")
     private final Long productId;

@@ -38,8 +38,8 @@ public class AskService {
     }
 
     // 문의사항 수정
-    public AskResponseDto updateAsk(Long id, AskRequestDto askRequest) {
-        Ask ask = askRepository.findById(id)
+    public AskResponseDto updateAsk(Long Id, AskRequestDto askRequest) {
+        Ask ask = askRepository.findById(Id)
                 .orElseThrow(() -> new RuntimeException("문의가 존재하지 않습니다."));
 
         ask.setTitle(askRequest.getTitle());
@@ -52,19 +52,19 @@ public class AskService {
     }
 
     // 문의사항 삭제
-    public void deleteAsk(Long id, Long userID) {
-        Ask ask = askRepository.findById(id)
+    public void deleteAsk(Long Id, Long userId) {
+        Ask ask = askRepository.findById(Id)
                 .orElseThrow(() -> new RuntimeException("문의가 존재하지 않습니다."));
-        if (!ask.getUserId().equals(userID)) {
+        if (!ask.getUserId().equals(userId)) {
             throw new RuntimeException("삭제 권한이 없습니다.");
         }
-        askRepository.deleteById(id);
+        askRepository.deleteById(Id);
     }
 
 
-    // 사용자 ID로 문의사항 조회
-    public List<AskResponseDto> getAsksByUserID(Long userID) {
-        return askRepository.findByUserId(userID)
+    // 사용자 Id로 문의사항 조회
+    public List<AskResponseDto> getAsksByUserId(Long userId) {
+        return askRepository.findByUserId(userId)
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -72,19 +72,19 @@ public class AskService {
 
     // 특정 문의사항 세부 조회
     public AskResponseDto getAskDetail(Long askId, Long userId) {
-        Ask ask = getAsksByIdAndUserID(askId, userId);
+        Ask ask = getAsksByIdAndUserId(askId, userId);
         return convertToDto(ask);
     }
 
-    // 특정 문의사항 조회 (ID와 사용자 ID로)
-    private Ask getAsksByIdAndUserID(Long id, Long userID) {
-        return askRepository.findByIdAndUserId(id, userID)
+    // 특정 문의사항 조회 (Id와 사용자 Id로)
+    private Ask getAsksByIdAndUserId(Long Id, Long userId) {
+        return askRepository.findByIdAndUserId(Id, userId)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
     }
 
     // 답변을 추가한 문의사항 반환
-    public AskResponseDto addAnswerToAsk(Long id, String answer, String response) {
-        Ask ask = askRepository.findById(id)
+    public AskResponseDto addAnswerToAsk(Long Id, String answer, String response) {
+        Ask ask = askRepository.findById(Id)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
 
         ask.setAnswer(answer, response);
@@ -118,5 +118,4 @@ public class AskService {
                 imageUrls
         );
     }
-
 }
