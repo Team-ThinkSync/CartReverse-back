@@ -1,5 +1,6 @@
 package com.project.webshopproject.ask.dto;
 
+import com.project.webshopproject.ask.entity.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,9 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class AskRequestDto {
 
-    @NotNull(message = "User ID는 null일 수 없습니다.")
-    private final Long userId;
-
     @NotBlank(message = "Title은 비어 있을 수 없습니다.")
     @Size(max = 100, message = "Title의 최대 길이는 100자입니다.")
     private final String title;
@@ -23,7 +21,7 @@ public class AskRequestDto {
     private final String content;
 
     @NotBlank(message = "Category는 비어 있을 수 없습니다.")
-    private final Enum category;
+    private final Category category;
 
     @NotNull(message = "Product ID는 null일 수 없습니다.")
     private final Long productId;

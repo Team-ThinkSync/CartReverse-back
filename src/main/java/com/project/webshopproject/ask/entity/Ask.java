@@ -1,5 +1,6 @@
 package com.project.webshopproject.ask.entity;
 
+import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -66,6 +67,9 @@ public class Ask {
         this.category = category;
         this.product = product;
         this.askStatus = AskStatus.WAITING; // 기본값으로 설정
+    }
+
+    public Ask(Long userId, AskRequestDto askRequest) {
     }
 
     // 답변과 상태 변경 메소드

@@ -2,6 +2,7 @@ package com.project.webshopproject.ask;
 
 import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.ask.dto.AskResponseDto;
+import com.project.webshopproject.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,7 +20,9 @@ public class AskController {
 
     // 특정 문의사항 상세 조회
     @GetMapping("/{askId}")
-    public ResponseEntity<AskResponseDto> getAsk(@PathVariable Long askId, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<AskResponseDto> getAsk(@PathVariable Long askId,
+                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getUserId();
         AskResponseDto askResponse = askService.getAskDetail(askId, userId);
         return ResponseEntity.ok(askResponse);
     }
@@ -33,10 +36,16 @@ public class AskController {
 
     // 문의사항 생성
     @PostMapping
-    public ResponseEntity<AskResponseDto> createAsk(@RequestBody AskRequestDto askRequest) {
-        AskResponseDto createdAsk = askService.createAsk(askRequest);
+    public ResponseEntity<AskResponseDto> createAsk(
+            @AuthenticationPrincipal UserDetailsImpl userDetails, // JWT에서 유저 정보 추출
+            @RequestBody AskRequestDto askRequest) {
+
+        Long userId = userDetails.getUser().getUserId(); // JWT에서 가져온 userId
+        AskResponseDto createdAsk = askService.createAsk(userId, askRequest); // userId를 따로 전달
+
         return ResponseEntity.ok(createdAsk);
     }
+
 
     // 문의사항 수정
     @PatchMapping("/{askId}")
@@ -47,7 +56,9 @@ public class AskController {
 
     // 문의사항 삭제
     @DeleteMapping("/{askId}")
-    public ResponseEntity<String> deleteAsk(@PathVariable Long askId, @AuthenticationPrincipal Long userId) {
+    public ResponseEntity<String> deleteAsk(@PathVariable Long askId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getUserId();
         askService.deleteAsk(askId, userId);
         return ResponseEntity.ok("삭제 완료");
     }

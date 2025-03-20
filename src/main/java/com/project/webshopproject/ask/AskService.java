@@ -4,7 +4,6 @@ import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.ask.dto.AskResponseDto;
 import com.project.webshopproject.ask.entity.Ask;
 import com.project.webshopproject.ask.entity.AskImage;
-import com.project.webshopproject.product.entity.Product;
 import com.project.webshopproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,22 +19,12 @@ public class AskService {
     private final ProductRepository productRepository;
 
     // 문의사항 생성
-    public AskResponseDto createAsk(AskRequestDto askRequest) {
-        Product product = productRepository.findById(askRequest.getProductId())
-                .orElseThrow(() -> new RuntimeException("해당 Product가 존재하지 않습니다."));
-
-        Ask ask = new Ask(
-                askRequest.getUserId(),
-                askRequest.getTitle(),
-                askRequest.getContent(),
-                askRequest.getCategory(),
-                product
-        );
-        Ask savedAsk = askRepository.save(ask);
-
-        // Ask를 AskResponseDto로 변환해서 반환
-        return convertToDto(savedAsk);
+    public AskResponseDto createAsk(Long userId, AskRequestDto askRequest) {
+        Ask ask = new Ask(userId, askRequest); // userId를 DTO에서 추출하는 것이 아니라 직접 주입
+        askRepository.save(ask);
+        return new AskResponseDto(ask);
     }
+
 
     // 문의사항 수정
     public AskResponseDto updateAsk(Long Id, AskRequestDto askRequest) {
@@ -72,15 +61,18 @@ public class AskService {
 
     // 특정 문의사항 세부 조회
     public AskResponseDto getAskDetail(Long askId, Long userId) {
-        Ask ask = getAsksByIdAndUserId(askId, userId);
-        return convertToDto(ask);
+        return getAsksByIdAndUserId(askId, userId);
     }
 
     // 특정 문의사항 조회 (Id와 사용자 Id로)
-    private Ask getAsksByIdAndUserId(Long Id, Long userId) {
-        return askRepository.findByIdAndUserId(Id, userId)
+    private AskResponseDto getAsksByIdAndUserId(Long id, Long userId) {
+        Ask ask = askRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
+
+        AskResponseDto askResponseDto = new AskResponseDto(ask);
+        return askResponseDto; // DTO 변환 후 반환
     }
+
 
     // 답변을 추가한 문의사항 반환
     public AskResponseDto addAnswerToAsk(Long Id, String answer, String response) {
