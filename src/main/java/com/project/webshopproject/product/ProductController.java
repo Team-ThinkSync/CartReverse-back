@@ -2,6 +2,7 @@ package com.project.webshopproject.product;
 
 import com.project.webshopproject.product.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +16,10 @@ public class ProductController {
 
     //모든 상품 조회
     @GetMapping("/product")
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts(){
-        List<ProductResponseDto> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(productService.getAllProducts(page, size));
     }
     //단일 상품 조회
     @GetMapping("/product/{productId}")
@@ -27,9 +29,11 @@ public class ProductController {
     }
     //카테고리 별 조회
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductByCategoryResponseDto>> getProductByCategory(@PathVariable("categoryId") Long categoryId){
-        List<ProductByCategoryResponseDto> product = productService.getProductByCategory(categoryId);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<Page<ProductByCategoryResponseDto>> getProductByCategory(
+            @PathVariable("categoryId") Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(productService.getProductByCategory(categoryId, page, size));
     }
     //상품 추가
     @PostMapping("/product")

@@ -1,22 +1,18 @@
 package com.project.webshopproject.product.repository;
 
 import com.project.webshopproject.product.dto.*;
-import com.project.webshopproject.product.entity.Product;
-import com.project.webshopproject.product.entity.ProductImage;
 import com.project.webshopproject.product.entity.QProductImage;
 import com.project.webshopproject.product.entity.QProduct;
 import com.project.webshopproject.category.entity.QProductCategory;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @Transactional
@@ -30,8 +26,9 @@ public class ProductQueryRepository {
     private final QProductCategory productCategory = QProductCategory.productCategory;
 
      //모든 상품 조회
-    public List<ProductResponseDto> findAllProducts(){
-        return jpaQueryFactory.select(new QProductResponseDto(
+    public Page<ProductResponseDto> findAllProducts(Pageable pageable){
+        List<ProductResponseDto> content = jpaQueryFactory
+                .select(new QProductResponseDto(
                 product.productId,
                 product.category.categoryId,
                 product.categoryType.stringValue(),
@@ -40,11 +37,22 @@ public class ProductQueryRepository {
                 product.price,
                 product.stock,
                 productImage.image
-        )).from(product)
+        ))
+                .from(product)
                 .leftJoin(productImage)
                 .on(productImage.product.productId.eq(product.productId)
                         .and(productImage.isMain.isTrue()))
+                .offset(pageable.getOffset()) // 시작 위치
+                .limit(pageable.getPageSize()) // 가져올 데이터 개수
                 .fetch();
+
+        long total = jpaQueryFactory
+                .select(product.count())
+                .from(product)
+                .fetchOne();
+        // 전체 조회
+
+        return new PageImpl<>(content, pageable,total);
 
     }
     //세부 상품 조회
@@ -64,6 +72,34 @@ public class ProductQueryRepository {
                 .where(product.productId.eq(productId)) // 특정 상품 ID로 필터링
                 .fetchOne();
     }
+
+    //카테 고리 별 조회
+    public Page<ProductByCategoryResponseDto> getProductByCategory(Long categoryId, Pageable pageable){
+        List<ProductByCategoryResponseDto> content = jpaQueryFactory
+                .select(new QProductByCategoryResponseDto(
+                        product.name,
+                        product.price,
+                        product.stock,
+                        productImage.image
+                ))
+                .from(product)
+                .leftJoin(productImage)
+                .on(productImage.product.productId.eq(product.productId)
+                        .and(productImage.isMain.isTrue()))
+                .where(product.category.categoryId.eq(categoryId))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = jpaQueryFactory
+                .select(product.count())
+                .from(product)
+                .where(product.category.categoryId.eq(categoryId))
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
     //카테고리 삭제할때, 관련된 상품들도 삭제하게끔
     public void deleteProductByCategory(Long categoryId){
 
@@ -78,23 +114,6 @@ public class ProductQueryRepository {
         jpaQueryFactory.delete(productCategory)
                 .where(productCategory.categoryId.eq(categoryId))
                 .execute();
-
-    }
-
-    //카테 고리 별 조회
-    public List<ProductByCategoryResponseDto> getProductByCategory(Long categoryId){
-        return jpaQueryFactory.select(new QProductByCategoryResponseDto(
-                product.name,
-                product.price,
-                product.stock,
-                productImage.image
-        ))
-                .from(product)
-                .leftJoin(productImage)
-                .on(productImage.product.productId.eq(product.productId)
-                        .and(productImage.isMain.isTrue()))
-                .where(product.category.categoryId.eq(categoryId))
-                .fetch();
     }
 
 }

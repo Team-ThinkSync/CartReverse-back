@@ -11,6 +11,9 @@ import com.project.webshopproject.product.dto.OrderProductRequestDto;
 import com.project.webshopproject.user.UserRepository;
 import com.project.webshopproject.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -113,5 +116,27 @@ public class PaymentService {
         payment.cancelPayment();
         paymentRepository.save(payment);
 
+    }
+
+
+    // 결제 내역조회 페이징
+    public Page<PaymentCreateResponseDto> getUserPayments(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저 정보가 없습니다."));
+
+        // 페이징 처리된 결제 내역 조회
+        List<PaymentCreateResponseDto> content = paymentRepository.findByUser(user, pageable).stream()
+                .map(payment -> new PaymentCreateResponseDto(
+                        payment.getOrderId(),
+                        payment.getOrderName(),
+                        payment.getTotalPrice(),
+                        payment.getStatus()
+                ))
+                .toList();
+
+        // 전체 결제 내역 개수 조회
+        long total = paymentRepository.countByUser(user);
+
+        return new PageImpl<>(content, pageable, total);
     }
 }
