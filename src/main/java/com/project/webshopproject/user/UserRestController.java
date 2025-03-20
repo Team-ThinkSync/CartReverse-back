@@ -6,6 +6,7 @@ import static com.project.webshopproject.security.JwtProvider.REFRESHTOKEN_HEADE
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.webshopproject.user.dto.KakaoUserInfoDto;
 import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
+import com.project.webshopproject.user.dto.UserGetResponseDto;
 import com.project.webshopproject.user.dto.UserKakaoProfileUpdateRequestDto;
 import com.project.webshopproject.user.dto.UserResignRequestDto;
 import com.project.webshopproject.user.dto.UserSignupRequestDto;
@@ -13,7 +14,12 @@ import com.project.webshopproject.common.RestApiResponseDto;
 import com.project.webshopproject.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +99,15 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(RestApiResponseDto.of(e.getMessage()));
         }
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<RestApiResponseDto<Page<UserGetResponseDto>>> getUsers(
+            @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        Page<UserGetResponseDto> responseDto = userService.getUsers(pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(RestApiResponseDto.of("유저 전체 조회 성공", responseDto));
     }
 
     /**

@@ -1,14 +1,18 @@
 package com.project.webshopproject.user;
 
 import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
+import com.project.webshopproject.user.dto.UserGetResponseDto;
 import com.project.webshopproject.user.dto.UserResignRequestDto;
 import com.project.webshopproject.user.dto.UserSignupRequestDto;
 import com.project.webshopproject.user.entity.Grade;
 import com.project.webshopproject.user.entity.User;
 import com.project.webshopproject.user.entity.UserLoginType;
 import com.project.webshopproject.user.entity.UserStatus;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -76,5 +80,10 @@ public class UserService {
         return userRepository.findByUserNameAndPhoneNumber(userName, phoneNumber)
                 .map(User::getEmail)
                 .orElse(null);
+    }
+
+    public Page<UserGetResponseDto> getUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(UserGetResponseDto::fromEntity);
     }
 }
