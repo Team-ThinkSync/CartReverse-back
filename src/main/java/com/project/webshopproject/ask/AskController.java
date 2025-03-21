@@ -4,11 +4,13 @@ import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.ask.dto.AskResponseDto;
 import com.project.webshopproject.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,10 +31,16 @@ public class AskController {
 
     // 사용자 문의사항 전체 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AskResponseDto>> getAllAsksByUser(@PathVariable Long userId) {
-        List<AskResponseDto> asks = askService.getAsksByUserId(userId);
+    public ResponseEntity<Page<AskResponseDto>> getAllAsksByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,   // 기본 페이지 번호
+            @RequestParam(defaultValue = "10") int size) { // 기본 페이지 사이즈
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AskResponseDto> asks = askService.getAsksByUserId(userId, pageable);
         return ResponseEntity.ok(asks);
     }
+
 
     // 문의사항 생성
     @PostMapping

@@ -112,4 +112,8 @@ public class Ask {
         this.content = content;
     }
 
+    public List<AskImage> getImages() {
+        return images;
+    }
+
 }

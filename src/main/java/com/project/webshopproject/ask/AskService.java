@@ -3,10 +3,14 @@ package com.project.webshopproject.ask;
 import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.ask.dto.AskResponseDto;
 import com.project.webshopproject.ask.entity.Ask;
-import com.project.webshopproject.ask.entity.AskImage;
+import com.project.webshopproject.ask.entity.Category;
 import com.project.webshopproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.project.webshopproject.ask.entity.AskImage;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +28,6 @@ public class AskService {
         askRepository.save(ask);
         return new AskResponseDto(ask);
     }
-
 
     // 문의사항 수정
     public AskResponseDto updateAsk(Long Id, AskRequestDto askRequest) {
@@ -50,13 +53,10 @@ public class AskService {
         askRepository.deleteById(Id);
     }
 
-
-    // 사용자 Id로 문의사항 조회
-    public List<AskResponseDto> getAsksByUserId(Long userId) {
-        return askRepository.findByUserId(userId)
-                .stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    // 사용자 Id로 문의사항 조회 (페이징 처리)
+    public Page<AskResponseDto> getAsksByUserId(Long userId, Pageable pageable) {
+        Page<Ask> asks = askRepository.findByUserId(userId, pageable);
+        return asks.map(this::convertToDto); // 엔티티를 DTO로 변환하여 반환
     }
 
     // 특정 문의사항 세부 조회
@@ -69,10 +69,8 @@ public class AskService {
         Ask ask = askRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
 
-        AskResponseDto askResponseDto = new AskResponseDto(ask);
-        return askResponseDto; // DTO 변환 후 반환
+        return convertToDto(ask); // DTO 변환 후 반환
     }
-
 
     // 답변을 추가한 문의사항 반환
     public AskResponseDto addAnswerToAsk(Long Id, String answer, String response) {
@@ -104,7 +102,7 @@ public class AskService {
                 ask.getUserId(),
                 ask.getTitle(),
                 ask.getContent(),
-                ask.getCategory(),
+                (Category) ask.getCategory(),
                 ask.getProduct().getProductId(),
                 ask.getAnswer(),
                 imageUrls
