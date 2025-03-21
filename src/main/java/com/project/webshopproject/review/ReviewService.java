@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,10 +79,11 @@ public class ReviewService {
         }
     }
 
+    //상품에 대한 리뷰 전체 조회
+    public Page<ReviewResponseDto> getAllReviews(Long productId, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findByProduct_ProductId(productId, pageable);
 
-    public List<ReviewResponseDto> getAllReviews(Long productId) {
-        return reviewRepository.findByProduct_ProductId(productId)
-                .stream()
+        List<ReviewResponseDto> reviewDtoList = reviewPage.getContent().stream()
                 .map(review -> new ReviewResponseDto(
                         review.getReviewId(),
                         review.getUser().getUserId(),
@@ -94,6 +98,8 @@ public class ReviewService {
                                 .collect(Collectors.toList())
                 ))
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(reviewDtoList, pageable, reviewPage.getTotalElements());
     }
 
     @Transactional
