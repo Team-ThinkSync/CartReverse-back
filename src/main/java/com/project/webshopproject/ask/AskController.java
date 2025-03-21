@@ -21,7 +21,7 @@ public class AskController {
     }
 
     // 사용자 문의사항 전체 조회
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<Map<String, Object>> getAllAsksByUser(@PathVariable Long userId) {
         List<Ask> asks = askService.getAsksByUserID(userId);
 

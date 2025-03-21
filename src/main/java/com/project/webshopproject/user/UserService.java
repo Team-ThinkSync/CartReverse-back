@@ -4,6 +4,7 @@ import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
 import com.project.webshopproject.user.dto.UserGetResponseDto;
 import com.project.webshopproject.user.dto.UserResignRequestDto;
 import com.project.webshopproject.user.dto.UserSignupRequestDto;
+import com.project.webshopproject.user.dto.UserUpdateRequestDto;
 import com.project.webshopproject.user.entity.Grade;
 import com.project.webshopproject.user.entity.User;
 import com.project.webshopproject.user.entity.UserLoginType;
@@ -82,8 +83,29 @@ public class UserService {
                 .orElse(null);
     }
 
+    //전체 유저 조회
     public Page<UserGetResponseDto> getUsers(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(UserGetResponseDto::fromEntity);
+    }
+
+    //마이페이지
+    public UserGetResponseDto getUser(User user) {
+        User getUser = userRepository.findByUserId(user.getUserId()).orElseThrow(() -> {
+            log.error("사용자를 찾지 못함 | request : {}", user.getUserId());
+            return new UsernameNotFoundException("사용자를 찾지 못했습니다.");
+        });
+        return UserGetResponseDto.fromEntity(getUser);
+    }
+
+    //유저 정보 수정
+    public UserGetResponseDto updateUser(User user, UserUpdateRequestDto requestDto) {
+        user.updateUser(
+                requestDto.username() != null ? requestDto.username() : user.getUsername(),
+                requestDto.nickname() != null ? requestDto.nickname() : user.getNickname(),
+                requestDto.phoneNumber() != null ? requestDto.phoneNumber() : user.getPhoneNumber(),
+                requestDto.address() != null ? requestDto.address() : user.getAddress()
+        );
+        return UserGetResponseDto.fromEntity(user);
     }
 }

@@ -12,11 +12,13 @@ import com.project.webshopproject.user.dto.UserResignRequestDto;
 import com.project.webshopproject.user.dto.UserSignupRequestDto;
 import com.project.webshopproject.common.RestApiResponseDto;
 import com.project.webshopproject.security.UserDetailsImpl;
+import com.project.webshopproject.user.dto.UserUpdateRequestDto;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -101,13 +103,38 @@ public class UserRestController {
         }
     }
 
+    /**
+     * 회원 전체 조회
+     * @param page
+     * @return UserGetResponseDto
+     * */
     @GetMapping("/users")
     public ResponseEntity<RestApiResponseDto<Page<UserGetResponseDto>>> getUsers(
-            @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable
+            @RequestParam(defaultValue = "1") int page
     ) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
         Page<UserGetResponseDto> responseDto = userService.getUsers(pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(RestApiResponseDto.of("유저 전체 조회 성공", responseDto));
+    }
+
+    @GetMapping("/users/me")
+    public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> getUser(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails
+    ) {
+        UserGetResponseDto responseDto = userService.getUser(userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(RestApiResponseDto.of("유저 정보 조회 성공", responseDto));
+    }
+
+    @PatchMapping("/users")
+    public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> updateUser(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails,
+            @RequestBody UserUpdateRequestDto requestDto
+    ) {
+        UserGetResponseDto responseDto = userService.updateUser(userDetails.getUser(), requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(RestApiResponseDto.of("유저 정보 수정 성공", responseDto));
     }
 
     /**

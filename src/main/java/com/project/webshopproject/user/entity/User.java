@@ -100,4 +100,12 @@ public class User extends TimeStamp {
         this.phoneNumber = phoneNumber;
         this.address = address;
     }
+
+    public void updateUser(String username, String nickname, String phoneNumber, String address) {
+        this.username = username;
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+    }
+
 }
