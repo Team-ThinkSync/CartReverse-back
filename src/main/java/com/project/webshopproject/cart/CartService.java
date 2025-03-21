@@ -7,12 +7,13 @@ import com.project.webshopproject.product.entity.Product;
 import com.project.webshopproject.product.repository.ProductRepository;
 import com.project.webshopproject.user.UserService;
 import com.project.webshopproject.user.entity.User;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,22 +38,19 @@ public class CartService {
         cartRepository.save(cart);
     }
 
-    // 장바구니 조회
-    public List<CartResponseDto> getAllCartItem(String email) {
+    // 장바구니 전체 조회
+    public Page<CartResponseDto> getAllCartItem(String email, Pageable pageable) {
         User user = userService.findByEmail(email);
-        List<Cart> cartItems = cartRepository.findByUser(user);
+        Page<Cart> cartPage = cartRepository.findByUser(user, pageable);
 
-        List<CartResponseDto> cartResponse = new ArrayList<>();
-        for (Cart cart : cartItems) {
-            CartResponseDto responseDto = new CartResponseDto(
-                    cart.getProduct().getName(),
-                    cart.getQuantity()
-            );
+        List<CartResponseDto> cartDtoList = cartPage.getContent().stream()
+                .map(cart -> new CartResponseDto(
+                        cart.getProduct().getName(),
+                        cart.getQuantity()
+                ))
+                .collect(Collectors.toList());
 
-            cartResponse.add(responseDto);
-        }
-
-        return cartResponse;
+        return new PageImpl<>(cartDtoList, pageable, cartPage.getTotalElements());
     }
 
     // 장바구니 항목 삭제
