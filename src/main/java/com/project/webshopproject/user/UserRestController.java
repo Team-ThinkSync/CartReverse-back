@@ -85,8 +85,8 @@ public class UserRestController {
 
     /**
      * 회원탈퇴
-     * @param requestDto: password
-     * @param userDetails
+     * @param requestDto : password
+     * @param userDetails : 유저 객체
      */
     @PatchMapping("/users/resign")
     public ResponseEntity<RestApiResponseDto<String>> resign(
@@ -105,7 +105,7 @@ public class UserRestController {
 
     /**
      * 회원 전체 조회
-     * @param page
+     * @param page : 페이지 넘버
      * @return UserGetResponseDto
      * */
     @GetMapping("/users")
@@ -118,6 +118,11 @@ public class UserRestController {
                 .body(RestApiResponseDto.of("유저 전체 조회 성공", responseDto));
     }
 
+    /**
+     * 회원 정보 수정
+     * @param requestDto : username, nickname, phoneNumber, address
+     * @param userDetails : 유저 객체
+     * */
     @PatchMapping("/users")
     public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> updateUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
@@ -128,6 +133,10 @@ public class UserRestController {
                 .body(RestApiResponseDto.of("유저 정보 수정 성공", responseDto));
     }
 
+    /**
+     * 마이페이지
+     * @param userDetails : 유저 객체
+     * */
     @GetMapping("/users/me")
     public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> getUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails
