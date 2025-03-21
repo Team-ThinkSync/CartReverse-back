@@ -118,15 +118,6 @@ public class UserRestController {
                 .body(RestApiResponseDto.of("유저 전체 조회 성공", responseDto));
     }
 
-    @GetMapping("/users/me")
-    public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> getUser(
-            @AuthenticationPrincipal final UserDetailsImpl userDetails
-    ) {
-        UserGetResponseDto responseDto = userService.getUser(userDetails.getUser());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(RestApiResponseDto.of("유저 정보 조회 성공", responseDto));
-    }
-
     @PatchMapping("/users")
     public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> updateUser(
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
@@ -135,6 +126,15 @@ public class UserRestController {
         UserGetResponseDto responseDto = userService.updateUser(userDetails.getUser(), requestDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(RestApiResponseDto.of("유저 정보 수정 성공", responseDto));
+    }
+
+    @GetMapping("/users/me")
+    public ResponseEntity<RestApiResponseDto<UserGetResponseDto>> getUser(
+            @AuthenticationPrincipal final UserDetailsImpl userDetails
+    ) {
+        UserGetResponseDto responseDto = userService.getUser(userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(RestApiResponseDto.of("유저 정보 조회 성공", responseDto));
     }
 
     /**
