@@ -125,7 +125,7 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보가 없습니다."));
 
         // 페이징 처리된 결제 내역 조회
-        List<PaymentCreateResponseDto> content = paymentRepository.findByUser(user, pageable).stream()
+        List<PaymentCreateResponseDto> content = paymentRepository.findByUserId(userId, pageable).stream()
                 .map(payment -> new PaymentCreateResponseDto(
                         payment.getOrderId(),
                         payment.getOrderName(),
@@ -135,7 +135,7 @@ public class PaymentService {
                 .toList();
 
         // 전체 결제 내역 개수 조회
-        long total = paymentRepository.countByUser(user);
+        long total = paymentRepository.countByUserId(userId);
 
         return new PageImpl<>(content, pageable, total);
     }

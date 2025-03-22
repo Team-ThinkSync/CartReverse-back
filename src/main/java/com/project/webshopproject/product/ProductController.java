@@ -17,7 +17,7 @@ public class ProductController {
     //모든 상품 조회
     @GetMapping("/product")
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(productService.getAllProducts(page, size));
     }
@@ -31,7 +31,7 @@ public class ProductController {
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<Page<ProductByCategoryResponseDto>> getProductByCategory(
             @PathVariable("categoryId") Long categoryId,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(productService.getProductByCategory(categoryId, page, size));
     }

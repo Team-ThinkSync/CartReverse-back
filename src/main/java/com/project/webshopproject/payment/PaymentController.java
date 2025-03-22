@@ -34,12 +34,12 @@ public class PaymentController {
         paymentService.cancelPayment(paymentKey);
     }
 
-    @GetMapping("/payment/{userId}")
+    @GetMapping("/payment")
     public ResponseEntity<Page<PaymentCreateResponseDto>> getUserPayments(
-            @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
+            @AuthenticationPrincipal final UserDetailsImpl userDetails,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return ResponseEntity.ok(paymentService.getUserPayments(userId, pageable));
+        return ResponseEntity.ok(paymentService.getUserPayments(userDetails.getUser().getUserId(), pageable));
     }
 }
