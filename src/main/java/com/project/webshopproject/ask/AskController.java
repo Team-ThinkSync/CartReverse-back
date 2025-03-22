@@ -46,10 +46,10 @@ public class AskController {
     @PostMapping
     public ResponseEntity<AskResponseDto> createAsk(
             @AuthenticationPrincipal UserDetailsImpl userDetails, // JWT에서 유저 정보 추출
-            @RequestBody AskRequestDto askRequest) {
+            @RequestBody AskRequestDto askRequestdto) {
 
         Long userId = userDetails.getUser().getUserId(); // JWT에서 가져온 userId
-        AskResponseDto createdAsk = askService.createAsk(userId, askRequest); // userId를 따로 전달
+        AskResponseDto createdAsk = askService.createAsk(userId, askRequestdto); // userId를 따로 전달
 
         return ResponseEntity.ok(createdAsk);
     }
@@ -72,7 +72,7 @@ public class AskController {
     }
 
     // 답변 추가
-    @PatchMapping("/{askId}/response")
+    @PutMapping("/{askId}/response")
     public ResponseEntity<AskResponseDto> addAnswerToAsk(@PathVariable Long askId, @RequestBody Map<String, String> requestBody) {
         String answer = requestBody.get("answer");
         String response = requestBody.get("response");

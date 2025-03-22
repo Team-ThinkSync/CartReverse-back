@@ -29,7 +29,7 @@ public class Ask {
     private String content;
 
     @Column(nullable = false, length = 50)
-    private Enum category;
+    private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -50,7 +50,7 @@ public class Ask {
     private List<AskImage> images;
 
     // 생성자에서 유효성 검사를 통해 값을 받도록 변경
-    public Ask(Long userId, String title, String content, Enum category, Product product, String adminResponse) {
+    public Ask(Long userId, String title, String content, Category category, Product product, String adminResponse) {
         this.userId = userId;
         this.title = title;
         this.content = content;
@@ -60,7 +60,7 @@ public class Ask {
         this.askStatus = AskStatus.ANSWERED;
     }
 
-    public Ask(Long userId, String title, String content, Enum category, Product product) {
+    public Ask(Long userId, String title, String content, Category category, Product product) {
         this.userId = userId;
         this.title = title;
         this.content = content;
