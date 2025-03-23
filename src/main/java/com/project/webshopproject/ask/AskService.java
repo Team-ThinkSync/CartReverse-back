@@ -3,7 +3,7 @@ package com.project.webshopproject.ask;
 import com.project.webshopproject.ask.dto.AskRequestDto;
 import com.project.webshopproject.ask.dto.AskResponseDto;
 import com.project.webshopproject.ask.entity.Ask;
-import com.project.webshopproject.ask.entity.Category;
+import com.project.webshopproject.ask.entity.AskCategory;
 import com.project.webshopproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,8 +30,8 @@ public class AskService {
     }
 
     // 문의사항 수정
-    public AskResponseDto updateAsk(Long Id, AskRequestDto askRequest) {
-        Ask ask = askRepository.findById(Id)
+    public AskResponseDto updateAsk(Long askId, AskRequestDto askRequest) {
+        Ask ask = askRepository.findById(askId)
                 .orElseThrow(() -> new RuntimeException("문의가 존재하지 않습니다."));
 
         ask.setTitle(askRequest.getTitle());
@@ -44,13 +44,13 @@ public class AskService {
     }
 
     // 문의사항 삭제
-    public void deleteAsk(Long Id, Long userId) {
-        Ask ask = askRepository.findById(Id)
+    public void deleteAsk(Long askId, Long userId) {
+        Ask ask = askRepository.findById(askId)
                 .orElseThrow(() -> new RuntimeException("문의가 존재하지 않습니다."));
         if (!ask.getUserId().equals(userId)) {
             throw new RuntimeException("삭제 권한이 없습니다.");
         }
-        askRepository.deleteById(Id);
+        askRepository.deleteById(askId);
     }
 
     // 사용자 Id로 문의사항 조회 (페이징 처리)
@@ -65,16 +65,16 @@ public class AskService {
     }
 
     // 특정 문의사항 조회 (Id와 사용자 Id로)
-    private AskResponseDto getAsksByIdAndUserId(Long id, Long userId) {
-        Ask ask = askRepository.findByIdAndUserId(id, userId)
+    private AskResponseDto getAsksByIdAndUserId(Long askId, Long userId) {
+        Ask ask = askRepository.findByAskIdAndUserId(askId, userId)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
 
         return convertToDto(ask); // DTO 변환 후 반환
     }
 
     // 답변을 추가한 문의사항 반환
-    public AskResponseDto addAnswerToAsk(Long Id, String answer, String response) {
-        Ask ask = askRepository.findById(Id)
+    public AskResponseDto addAnswerToAsk(Long askId, String answer, String response) {
+        Ask ask = askRepository.findById(askId)
                 .orElseThrow(() -> new RuntimeException("문의사항이 존재하지 않습니다."));
 
         ask.setAnswer(answer, response);
@@ -102,7 +102,7 @@ public class AskService {
                 ask.getUserId(),
                 ask.getTitle(),
                 ask.getContent(),
-                (Category) ask.getCategory(),
+                (AskCategory) ask.getAskCategory(),
                 ask.getProduct().getProductId(),
                 ask.getAnswer(),
                 imageUrls

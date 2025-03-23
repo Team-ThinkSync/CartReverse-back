@@ -86,53 +86,9 @@ public class ReviewService {
     public Page<ReviewResponseDto> getAllReviews(Long productId, Pageable pageable) {
         Page<Review> reviewPage = reviewRepository.findByProduct_ProductId(productId, pageable);
 
-
-//    public List<ReviewResponseDto> getAllReviews(Long productId) {
-//        return reviewRepository.findByProduct_ProductId(productId)
-//                .stream()
-//                .map(review -> new ReviewResponseDto(
-//                        review.getReviewId(),
-//                        review.getUser().getUserId(),
-//                        review.getProduct().getProductId(),
-//                        review.getTitle(),
-//                        review.getContent(),
-//                        review.getRate(),
-//                        review.getCreatedAt(),
-//                        review.getReviewImages().stream()
-//                                .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
-//                                .map(ReviewImage::getImage)
-//                                .collect(Collectors.toList())
-//
-//                ))
-//                .collect(Collectors.toList());
-//    }
-
-    public List<ReviewResponseDto> getAllReviews(Long productId) {
-        return reviewRepository.findByProduct_ProductId(productId)
-                .stream()
-                .map(review -> {
-                    // 각 리뷰에 대해 좋아요 수를 개별적으로 계산
-                    Long likeCount = likeRepository.countByReviewId(review.getReviewId());
-
-                    return new ReviewResponseDto(
-                            review.getReviewId(),
-                            review.getUser().getUserId(),
-                            review.getProduct().getProductId(),
-                            review.getTitle(),
-                            review.getContent(),
-                            review.getRate(),
-                            review.getCreatedAt(),
-                            review.getReviewImages().stream()
-                                    .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
-                                    .map(ReviewImage::getImage)
-                                    .collect(Collectors.toList()),
-                            likeCount // 각 리뷰에 대한 좋아요 수 추가
-                    );
-                })
-
         List<ReviewResponseDto> reviewDtoList = reviewPage.getContent().stream()
                 .map(review -> {
-                 Long likeCount = likeRepository.countByReviewId(review.getReviewId());
+                 Long likeCount = likeRepository.countByReview_ReviewId(review.getReviewId());
                   
                    return new ReviewResponseDto(
                             review.getReviewId(),
@@ -149,7 +105,6 @@ public class ReviewService {
                             likeCount // 각 리뷰에 대한 좋아요 수 추가
                     );
                 })
-      
 
                 .collect(Collectors.toList());
 
@@ -195,7 +150,7 @@ public class ReviewService {
                 .map(ReviewImage::getImage)
                 .collect(Collectors.toList());
 
-        Long likeCount = likeRepository.countByReviewId(reviewId);
+        Long likeCount = likeRepository.countByReview_ReviewId(reviewId);
 
         // ReviewResponseDto 반환
         return new ReviewResponseDto(
