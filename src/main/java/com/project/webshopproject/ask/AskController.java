@@ -30,17 +30,16 @@ public class AskController {
     }
 
     // 사용자 문의사항 전체 조회
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<Page<AskResponseDto>> getAllAsksByUser(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,   // 기본 페이지 번호
-            @RequestParam(defaultValue = "10") int size) { // 기본 페이지 사이즈
-
+            @RequestParam(defaultValue = "10") int size
+    ) { // 기본 페이지 사이즈
         Pageable pageable = PageRequest.of(page, size);
         Page<AskResponseDto> asks = askService.getAsksByUserId(userId, pageable);
         return ResponseEntity.ok(asks);
     }
-
 
     // 문의사항 생성
     @PostMapping

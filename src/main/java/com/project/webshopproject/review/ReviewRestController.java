@@ -7,6 +7,9 @@ import com.project.webshopproject.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +30,10 @@ public class ReviewRestController {
 
     /**
      * 리뷰 추가
-     * @param productId 제품 고유번호
-     * @param requestDto 제목, 내용, 별점
-     * @param images 이미지
-     * @param userDetails
+     * @param productId: 제품 고유번호
+     * @param requestDto: title, content, rate
+     * @param images: 이미지 파일
+     * @param userDetails: 유저 객체
      */
     @PostMapping("/products/{productId}/reviews")
     public ResponseEntity<RestApiResponseDto<String>> createReview(
@@ -45,21 +49,23 @@ public class ReviewRestController {
 
     /**
      * 리뷰 전체조회
-     * @param productId 제품 고유번호
+     * @param productId: 제품 고유번호
      */
     @GetMapping("/products/{productId}/reviews")
-    public ResponseEntity<RestApiResponseDto<List<ReviewResponseDto>>> getAllReviews(
-            @PathVariable Long productId
+    public ResponseEntity<RestApiResponseDto<Page<ReviewResponseDto>>> getAllReviews(
+            @PathVariable Long productId,
+            @RequestParam(defaultValue = "1") int page
     ) {
-        List<ReviewResponseDto> responseDto = reviewService.getAllReviews(productId);
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        Page<ReviewResponseDto> responseDto = reviewService.getAllReviews(productId, pageable);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(RestApiResponseDto.of("리뷰를 전체조회하였습니다.", responseDto));
     }
 
     /**
      * 리뷰 수정
-     * @param reviewId 리뷰 고유번호
-     * @param requestDto 제목, 내용, 별점
+     * @param reviewId: 리뷰 고유번호
+     * @param requestDto: title, content, rate
      */
     @PatchMapping("/products/{productId}/reviews/{reviewId}")
     public ResponseEntity<RestApiResponseDto<String>> updateReview(
@@ -77,7 +83,7 @@ public class ReviewRestController {
 
     /**
      * 리뷰 삭제
-     * @param reviewId 리뷰 고유번호
+     * @param reviewId: 리뷰 고유번호
      */
     @DeleteMapping("/products/{productId}/reviews/{reviewId}")
     public ResponseEntity<RestApiResponseDto<String>> deleteReview(@PathVariable Long reviewId) {
