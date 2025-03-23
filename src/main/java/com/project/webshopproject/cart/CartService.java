@@ -41,7 +41,7 @@ public class CartService {
     // 장바구니 전체 조회
     public Page<CartResponseDto> getAllCartItem(String email, Pageable pageable) {
         User user = userService.findByEmail(email);
-        Page<Cart> cartPage = cartRepository.findByUser(user, pageable);
+        Page<Cart> cartPage = cartRepository.findByUser_UserId(user.getUserId(), pageable);
 
         List<CartResponseDto> cartDtoList = cartPage.getContent().stream()
                 .map(cart -> new CartResponseDto(
