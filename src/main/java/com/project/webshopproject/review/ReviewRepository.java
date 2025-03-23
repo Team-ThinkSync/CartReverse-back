@@ -7,5 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+    void deleteByProduct_ProductId(Long productId);
     Page<Review> findByProduct_ProductId(Long productId, Pageable pageable);
 }

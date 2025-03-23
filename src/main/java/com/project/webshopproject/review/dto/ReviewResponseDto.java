@@ -11,5 +11,6 @@ public record ReviewResponseDto(
         String content,
         int rate,
         LocalDateTime createdAt,
-        List<String> imageUrls
+        List<String> imageUrls,
+        Long likeCount
 ) {}

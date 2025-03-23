@@ -1,15 +1,12 @@
 package com.project.webshopproject.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.project.webshopproject.user.dto.KakaoUserInfoDto;
-import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
-import com.project.webshopproject.user.dto.UserGetResponseDto;
-import com.project.webshopproject.user.dto.UserKakaoProfileUpdateRequestDto;
-import com.project.webshopproject.user.dto.UserResignRequestDto;
-import com.project.webshopproject.user.dto.UserSignupRequestDto;
+
+import com.project.webshopproject.user.dto.*;
 import com.project.webshopproject.common.RestApiResponseDto;
 import com.project.webshopproject.security.UserDetailsImpl;
-import com.project.webshopproject.user.dto.UserUpdateRequestDto;
+import com.project.webshopproject.user.entity.User;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -189,5 +186,13 @@ public class UserRestController {
 
         // RestApiResponseDto를 이용해 반환
         return ResponseEntity.ok(RestApiResponseDto.of("카카오 회원가입이 완료되었습니다."));
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<MyPageResponseDto> getMyPage(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+        return ResponseEntity.ok(userService.myPageResponseDto(user.getUserId()));
     }
 }

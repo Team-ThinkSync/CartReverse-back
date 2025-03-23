@@ -17,10 +17,11 @@ public class ProductResponseDto {
     private Integer productPrice;
     private Integer productStock;
     private String productImage;
+    private Long likeCount;
 
     @QueryProjection
     public ProductResponseDto(Long productId, Long categoryId, String categoryType, String categoryName,
-                              String name, Integer price, Integer stock, String productImage ) {
+                              String name, Integer price, Integer stock, String productImage, Long likeCount ) {
         this.productId = productId;
         this.categoryId = categoryId;
         this.categoryType = categoryType;
@@ -29,5 +30,6 @@ public class ProductResponseDto {
         this.productPrice = price;
         this.productStock = stock;
         this.productImage = productImage;
+        this.likeCount = likeCount;
     }
 }
