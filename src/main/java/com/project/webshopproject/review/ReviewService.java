@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,6 +82,10 @@ public class ReviewService {
         }
     }
 
+    //상품에 대한 리뷰 전체 조회
+    public Page<ReviewResponseDto> getAllReviews(Long productId, Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findByProduct_ProductId(productId, pageable);
+
 
 //    public List<ReviewResponseDto> getAllReviews(Long productId) {
 //        return reviewRepository.findByProduct_ProductId(productId)
@@ -122,7 +129,31 @@ public class ReviewService {
                             likeCount // 각 리뷰에 대한 좋아요 수 추가
                     );
                 })
+
+        List<ReviewResponseDto> reviewDtoList = reviewPage.getContent().stream()
+                .map(review -> {
+                 Long likeCount = likeRepository.countByReviewId(review.getReviewId());
+                  
+                   return new ReviewResponseDto(
+                            review.getReviewId(),
+                            review.getUser().getUserId(),
+                            review.getProduct().getProductId(),
+                            review.getTitle(),
+                            review.getContent(),
+                            review.getRate(),
+                            review.getCreatedAt(),
+                            review.getReviewImages().stream()
+                                    .sorted(Comparator.comparingInt(ReviewImage::getOrderNo)) // orderNo 기준 정렬
+                                    .map(ReviewImage::getImage)
+                                    .collect(Collectors.toList()),
+                            likeCount // 각 리뷰에 대한 좋아요 수 추가
+                    );
+                })
+      
+
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(reviewDtoList, pageable, reviewPage.getTotalElements());
     }
 
 
