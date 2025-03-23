@@ -1,88 +1,88 @@
 package com.project.webshopproject.ask;
 
 import com.project.webshopproject.ask.dto.AskRequestDto;
-import com.project.webshopproject.ask.entity.Ask;
+import com.project.webshopproject.ask.dto.AskResponseDto;
+import com.project.webshopproject.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/asks")
 public class AskController {
+
     private final AskService askService;
 
-    @GetMapping("/asks/{askId}")
-    public AskRequestDto getAsk(@PathVariable Long askId, @RequestParam Long userId) {
-        return askService.getAskDetail(askId, userId);
+    // 특정 문의사항 상세 조회
+    @GetMapping("/{askId}")
+    public ResponseEntity<AskResponseDto> getAsk(@PathVariable Long askId,
+                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getUserId();
+        AskResponseDto askResponse = askService.getAskDetail(askId, userId);
+        return ResponseEntity.ok(askResponse);
     }
 
     // 사용자 문의사항 전체 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<Map<String, Object>> getAllAsksByUser(@PathVariable Long userId) {
-        List<Ask> asks = askService.getAsksByUserID(userId);
+    public ResponseEntity<Page<AskResponseDto>> getAllAsksByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,   // 기본 페이지 번호
+            @RequestParam(defaultValue = "10") int size) { // 기본 페이지 사이즈
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("code", "200");
-        response.put("message", "문의내용 가져오기 성공");
-        response.put("data", asks);
-
-        return ResponseEntity.ok(response);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AskResponseDto> asks = askService.getAsksByUserId(userId, pageable);
+        return ResponseEntity.ok(asks);
     }
 
-    @PostMapping("/ask")
-    public ResponseEntity<Ask> createInquiry(@RequestBody AskRequestDto inquiryRequest) {
-        return ResponseEntity.ok(askService.createAsk(inquiryRequest));
+
+    // 문의사항 생성
+    @PostMapping
+    public ResponseEntity<AskResponseDto> createAsk(
+            @AuthenticationPrincipal UserDetailsImpl userDetails, // JWT에서 유저 정보 추출
+            @RequestBody AskRequestDto askRequestdto) {
+
+        Long userId = userDetails.getUser().getUserId(); // JWT에서 가져온 userId
+        AskResponseDto createdAsk = askService.createAsk(userId, askRequestdto); // userId를 따로 전달
+
+        return ResponseEntity.ok(createdAsk);
     }
 
+
+    // 문의사항 수정
     @PatchMapping("/{askId}")
-    public ResponseEntity<Ask> updateInquiry(@PathVariable Long askId, @RequestBody AskRequestDto inquiryRequest) {
-        Ask updatedAsk = askService.updateAsk(askId, inquiryRequest);
+    public ResponseEntity<AskResponseDto> updateAsk(@PathVariable Long askId, @RequestBody AskRequestDto askRequest) {
+        AskResponseDto updatedAsk = askService.updateAsk(askId, askRequest);
         return ResponseEntity.ok(updatedAsk);
     }
 
+    // 문의사항 삭제
     @DeleteMapping("/{askId}")
-    public ResponseEntity<Map<String, String>> deleteInquiry(
-            @PathVariable Long askId,
-            @RequestBody Map<String, String> requestBody) {
-
-        // 요청에서 userID 추출
-        Long userId = Long.parseLong(requestBody.get("userID"));
-
-        // 삭제 처리
+    public ResponseEntity<String> deleteAsk(@PathVariable Long askId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getUserId();
         askService.deleteAsk(askId, userId);
-
-        // 응답 메시지 생성
-        Map<String, String> response = new HashMap<>();
-        response.put("code", "200");
-        response.put("message", "삭제 완료");
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("삭제 완료");
     }
 
-    @PatchMapping("/{askId}/response")
-    public ResponseEntity<Map<String, Object>> addAnswerToInquiry(
-            @PathVariable Long askId,
-            @RequestBody Map<String, String> requestBody) {
-
+    // 답변 추가
+    @PutMapping("/{askId}/response")
+    public ResponseEntity<AskResponseDto> addAnswerToAsk(@PathVariable Long askId, @RequestBody Map<String, String> requestBody) {
         String answer = requestBody.get("answer");
+        String response = requestBody.get("response");
+
         if (answer == null || answer.isEmpty()) {
             throw new RuntimeException("답변 내용을 입력해주세요.");
         }
 
-        Ask updatedAsk = askService.addAnswerToAsk(askId, answer);
+        AskResponseDto updatedAsk = askService.addAnswerToAsk(askId, answer, response);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("userId", updatedAsk.getUserId());
-        response.put("title", updatedAsk.getTitle());
-        response.put("content", updatedAsk.getContent());
-        response.put("category", updatedAsk.getCategory());
-        response.put("itemId", updatedAsk.getItemId());
-        response.put("answer", updatedAsk.getAnswer());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(updatedAsk);
     }
 }
