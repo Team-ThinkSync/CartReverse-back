@@ -1,6 +1,7 @@
 package com.project.webshopproject.payment;
 
 import com.project.webshopproject.config.PaymentConfig;
+import com.project.webshopproject.config.WebClientConfig;
 import com.project.webshopproject.payment.dto.PaymentConfirmRequestDto;
 import com.project.webshopproject.payment.dto.PaymentCreateResponseDto;
 import com.project.webshopproject.payment.dto.PaymentSuccessResponseDto;
@@ -125,7 +126,7 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보가 없습니다."));
 
         // 페이징 처리된 결제 내역 조회
-        List<PaymentCreateResponseDto> content = paymentRepository.findByUserId(userId, pageable).stream()
+        List<PaymentCreateResponseDto> content = paymentRepository.findByUser_UserId(userId, pageable).stream()
                 .map(payment -> new PaymentCreateResponseDto(
                         payment.getOrderId(),
                         payment.getOrderName(),
@@ -135,7 +136,7 @@ public class PaymentService {
                 .toList();
 
         // 전체 결제 내역 개수 조회
-        long total = paymentRepository.countByUserId(userId);
+        long total = paymentRepository.countByUser_UserId(userId);
 
         return new PageImpl<>(content, pageable, total);
     }

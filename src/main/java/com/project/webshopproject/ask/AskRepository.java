@@ -15,7 +15,7 @@ public interface AskRepository extends JpaRepository<Ask, Long> {
     Page<Ask> findByUserId(Long userId, Pageable pageable);
 
     // 사용자 ID와 문의 ID로 조회
-    Optional<Ask> findByIdAndUserId(Long id, Long userId);
+    Optional<Ask> findByAskIdAndUserId(Long askId, Long userId);
 
     // 사용자 ID로 모든 문의사항 조회 (페이징 없이)
     List<Ask> findByUserId(Long userId);

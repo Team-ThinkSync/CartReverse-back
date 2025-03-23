@@ -12,7 +12,7 @@ public interface PaymentRepository extends JpaRepository<Payment,Long> {
     Optional<Payment> findByOrderId(String orderId);
     Optional<Payment> findByPaymentKey(String paymentKey);
 
-    Page<Payment> findByUserId(Long userId, Pageable pageable);
-    long countByUserId(Long userId);
+    Page<Payment> findByUser_UserId(Long userId, Pageable pageable);
+    long countByUser_UserId(Long userId);
 
 }

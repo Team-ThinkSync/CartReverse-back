@@ -29,7 +29,7 @@ public class Ask {
     private String content;
 
     @Column(nullable = false, length = 50)
-    private Category category;
+    private AskCategory askCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -50,21 +50,21 @@ public class Ask {
     private List<AskImage> images;
 
     // 생성자에서 유효성 검사를 통해 값을 받도록 변경
-    public Ask(Long userId, String title, String content, Category category, Product product, String adminResponse) {
+    public Ask(Long userId, String title, String content, AskCategory askCategory, Product product, String adminResponse) {
         this.userId = userId;
         this.title = title;
         this.content = content;
-        this.category = category;
+        this.askCategory = askCategory;
         this.product = product;
         this.adminResponse = adminResponse;
         this.askStatus = AskStatus.ANSWERED;
     }
 
-    public Ask(Long userId, String title, String content, Category category, Product product) {
+    public Ask(Long userId, String title, String content, AskCategory askCategory, Product product) {
         this.userId = userId;
         this.title = title;
         this.content = content;
-        this.category = category;
+        this.askCategory = askCategory;
         this.product = product;
         this.askStatus = AskStatus.WAITING; // 기본값으로 설정
     }

@@ -1,6 +1,6 @@
 package com.project.webshopproject.ask.dto;
 
-import com.project.webshopproject.ask.entity.Category;
+import com.project.webshopproject.ask.entity.AskCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,7 +21,7 @@ public class AskRequestDto {
     private final String content;
 
     @NotBlank(message = "Category는 비어 있을 수 없습니다.")
-    private final Category category;
+    private final AskCategory askCategory;
 
     @NotNull(message = "Product ID는 null일 수 없습니다.")
     private final Long productId;

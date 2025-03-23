@@ -83,7 +83,7 @@ public class UserService {
         return new MyPageResponseDto(user);
     }
     public String findEmailByUserNameAndPhoneNumber(String userName, String phoneNumber) {
-        return userRepository.findByUserNameAndPhoneNumber(userName, phoneNumber)
+        return userRepository.findByUsernameAndPhoneNumber(userName, phoneNumber)
                 .map(User::getEmail)
                 .orElse(null);
     }

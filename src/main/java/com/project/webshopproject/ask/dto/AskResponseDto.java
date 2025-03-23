@@ -2,7 +2,7 @@ package com.project.webshopproject.ask.dto;
 
 import com.project.webshopproject.ask.entity.Ask;
 import com.project.webshopproject.ask.entity.AskImage;
-import com.project.webshopproject.ask.entity.Category;
+import com.project.webshopproject.ask.entity.AskCategory;
 import lombok.Getter;
 
 import java.util.List;
@@ -14,17 +14,17 @@ public class AskResponseDto {
     private final Long userId;
     private final String title;
     private final String content;
-    private final Category category;
+    private final AskCategory askCategory;
     private final Long productId;
     private final String answer;
     private final List<String> imageUrls;
 
-    public AskResponseDto(Long askId, Long userId, String title, String content, Category category, Long productId, String answer, List<String> imageUrls) {
+    public AskResponseDto(Long askId, Long userId, String title, String content, AskCategory askCategory, Long productId, String answer, List<String> imageUrls) {
         this.askId = askId;
         this.userId = userId;
         this.title = title;
         this.content = content;
-        this.category = category;
+        this.askCategory = askCategory;
         this.productId = productId;
         this.answer = answer;
         this.imageUrls = imageUrls;
@@ -36,7 +36,7 @@ public class AskResponseDto {
         this.userId = ask.getUserId();
         this.title = ask.getTitle();
         this.content = ask.getContent();
-        this.category = (Category) ask.getCategory();
+        this.askCategory = (AskCategory) ask.getAskCategory();
         this.productId = ask.getProduct().getProductId();
         this.answer = ask.getAnswer();
         this.imageUrls = ask.getImages().stream()

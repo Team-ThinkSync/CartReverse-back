@@ -18,5 +18,5 @@ public interface LikeRepository extends JpaRepository<Likes, Long> {
 
     void deleteByProduct_ProductId(Long productId);
 
-    long countByReviewId(Long reviewId);
+    long countByReview_ReviewId(Long reviewId);
 }

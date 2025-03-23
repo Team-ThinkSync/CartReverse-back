@@ -59,7 +59,7 @@ public class CategoryService {
     // 카테고리 삭제
     public void deleteCategory(Long categoryId){
 
-        List<Product> products = productRepository.findByCategoryId(categoryId);
+        List<Product> products = productRepository.findByCategory_CategoryId(categoryId);
 
         for (Product product : products) {
             Long productId = product.getProductId();
