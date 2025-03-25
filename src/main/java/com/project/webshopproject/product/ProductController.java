@@ -15,20 +15,20 @@ public class ProductController {
     private final ProductService productService;
 
     //모든 상품 조회
-    @GetMapping("/product")
+    @GetMapping("/products")
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.ok(productService.getAllProducts(page, size));
     }
     //단일 상품 조회
-    @GetMapping("/product/{productId}")
+    @GetMapping("/products/{productId}")
     public ResponseEntity<ProductFindResponseDto> getProductById(@PathVariable("productId") Long productId) {
         ProductFindResponseDto product = productService.getProductById(productId);
         return ResponseEntity.ok(product);
     }
     //카테고리 별 조회
-    @GetMapping("/category/{categoryId}")
+    @GetMapping("/categories/{categoryId}/products")
     public ResponseEntity<Page<ProductByCategoryResponseDto>> getProductByCategory(
             @PathVariable("categoryId") Long categoryId,
             @RequestParam(defaultValue = "1") int page,
@@ -36,7 +36,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductByCategory(categoryId, page, size));
     }
     //상품 추가
-    @PostMapping("/product")
+    @PostMapping("/products")
     public ResponseEntity<String> addProduct(@RequestPart("dto") ProductAddRequestDto productAddRequestDto,
                                              @RequestPart("image") final List<MultipartFile> images){
         productService.addProduct(productAddRequestDto,images);
@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     // 상품 수정
-    @PatchMapping("/product/{productId}")
+    @PatchMapping("/products/{productId}")
     public ResponseEntity<String> updateProduct(@PathVariable Long productId,
                                                                  @RequestPart("dto") ProductUpdateRequestDto productUpdateRequestDto,
                                                                  @RequestPart(value = "image") final List<MultipartFile> images){
@@ -52,7 +52,7 @@ public class ProductController {
         return ResponseEntity.ok("상품 수정에 성공하였습니다");
     }
     // 상품 삭제
-    @DeleteMapping("product/{productId}")
+    @DeleteMapping("products/{productId}")
     public ResponseEntity<String> deleteItem(@PathVariable("productId") Long productId){
         productService.deleteProduct(productId);
         return ResponseEntity.ok("상품삭제에 성공하였습니다");
