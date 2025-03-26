@@ -2,14 +2,20 @@ package com.project.webshopproject.product;
 
 import com.project.webshopproject.category.entity.ProductCategory;
 import com.project.webshopproject.category.repository.ProductCategoryRepository;
+import com.project.webshopproject.like.repository.LikeRepository;
 import com.project.webshopproject.product.dto.*;
 import com.project.webshopproject.product.entity.Product;
 import com.project.webshopproject.product.entity.ProductImage;
 import com.project.webshopproject.product.repository.ProductImageRepository;
 import com.project.webshopproject.product.repository.ProductQueryRepository;
 import com.project.webshopproject.product.repository.ProductRepository;
+import com.project.webshopproject.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,19 +37,23 @@ public class ProductService {
     private final ProductImageRepository productImageRepository;
     private final ProductQueryRepository productQueryRepository;
     private final ProductCategoryRepository productCategoryRepository;
+    private final ReviewRepository reviewRepository;
+    private final LikeRepository likeRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir; // 이미지 파일 저장 되는 경로
 
-
     // 전체 상품 조회
-    public List<ProductResponseDto> getAllProducts(){
-       return productQueryRepository.findAllProducts();
+    public Page<ProductResponseDto> getAllProducts(int page, int size){
+       // productQueryRepository.findAllProducts();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "productId"));
+        return productQueryRepository.findAllProducts(pageable);
     }
 
     //카테고리별 조회 api 추가
-    public List<ProductByCategoryResponseDto> getProductByCategory(Long categoryId){
-        return productQueryRepository.getProductByCategory(categoryId);
+    public Page<ProductByCategoryResponseDto> getProductByCategory(Long categoryId, int page, int size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "name"));
+        return productQueryRepository.getProductByCategory(categoryId, pageable);
     }
 
      // 세부 상품 조회
@@ -147,13 +157,19 @@ public class ProductService {
         }
     }
 
-
     // 상품 삭제
     @Transactional
     public void deleteProduct(Long productId){
-        Product deleteItem = productRepository.findById(productId)
+        Product deleteProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. ID: " + productId));
-        productRepository.delete(deleteItem);
+
+        productImageRepository.deleteByProduct_ProductId(productId);
+
+        likeRepository.deleteByProduct_ProductId(productId);
+
+        reviewRepository.deleteByProduct_ProductId(productId);
+
+        productRepository.delete(deleteProduct);
     }
 
 }

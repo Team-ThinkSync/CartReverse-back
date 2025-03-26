@@ -1,17 +1,13 @@
 package com.project.webshopproject.ask.entity;
 
-import static com.project.webshopproject.ask.entity.AskStatus.ANSWERED;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.project.webshopproject.ask.dto.AskRequestDto;
+import com.project.webshopproject.product.entity.Product;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,7 +17,7 @@ public class Ask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long askId;
 
     @Column(nullable = false)
     private Long userId;
@@ -33,10 +29,11 @@ public class Ask {
     private String content;
 
     @Column(nullable = false, length = 50)
-    private String category;
+    private AskCategory askCategory;
 
-    @Column(length = 20)
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(length = 500)
     private String adminResponse;
@@ -48,18 +45,75 @@ public class Ask {
     @Column(nullable = false)
     private AskStatus askStatus;
 
-    // 모든 필드를 초기화하는 생성자 추가
-    public Ask(Long userId, String title, String content, String category, Long itemId) {
+    // 이미지 테이블과 연관 관계 설정 (일대다)
+    @OneToMany(mappedBy = "ask", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AskImage> images;
+
+    // 생성자에서 유효성 검사를 통해 값을 받도록 변경
+    public Ask(Long userId, String title, String content, AskCategory askCategory, Product product, String adminResponse) {
         this.userId = userId;
         this.title = title;
         this.content = content;
-        this.category = category;
-        this.itemId = itemId;
-        this.askStatus = ANSWERED; // 기본값 설정
+        this.askCategory = askCategory;
+        this.product = product;
+        this.adminResponse = adminResponse;
+        this.askStatus = AskStatus.ANSWERED;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
-        this.askStatus = ANSWERED; // 답변이 설정되면 상태를 ANSWERED로 변경
+    public Ask(Long userId, String title, String content, AskCategory askCategory, Product product) {
+        this.userId = userId;
+        this.title = title;
+        this.content = content;
+        this.askCategory = askCategory;
+        this.product = product;
+        this.askStatus = AskStatus.WAITING; // 기본값으로 설정
     }
+
+    public Ask(Long userId, AskRequestDto askRequest) {
+    }
+
+    // 답변과 상태 변경 메소드
+    public void setAnswer(String answer, String response) {
+        this.answer = answer;
+        this.askStatus = AskStatus.ANSWERED;
+        this.adminResponse = response;
+    }
+
+    // 이미지 추가 메소드
+    public void addImages(List<AskImage> images) {
+        if (this.images == null) {
+            this.images = new ArrayList<>();
+        }
+        this.images.addAll(images);
+    }
+
+    // 이미지 삭제 메소드
+    public void removeImage(AskImage image) {
+        if (this.images != null) {
+            this.images.remove(image);
+        }
+    }
+
+    // 이거 Service 로직에서 에러남 (이거 삭제하면)
+    public void setTitle(String title) {
+        if (title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title은 비어 있을 수 없습니다.");
+        }
+        if (title.length() > 100) {
+            throw new IllegalArgumentException("Title의 최대 길이는 100자입니다.");
+        }
+        this.title = title;
+    }
+
+    public void setContent(String content) {
+        if (content == null || content.isEmpty()) {
+            throw new IllegalArgumentException("Content는 비어 있을 수 없습니다.");
+        }
+        this.content = content;
+    }
+
+    public List<AskImage> getImages() {
+        return images;
+    }
+
 }

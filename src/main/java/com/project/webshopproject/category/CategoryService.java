@@ -5,8 +5,12 @@ import com.project.webshopproject.category.dto.CategoryEditRequestDto;
 import com.project.webshopproject.category.dto.CategoryResponseDto;
 import com.project.webshopproject.category.entity.ProductCategory;
 import com.project.webshopproject.category.repository.ProductCategoryRepository;
+import com.project.webshopproject.like.repository.LikeRepository;
+import com.project.webshopproject.product.entity.Product;
+import com.project.webshopproject.product.repository.ProductImageRepository;
 import com.project.webshopproject.product.repository.ProductQueryRepository;
 import com.project.webshopproject.product.repository.ProductRepository;
+import com.project.webshopproject.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +21,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryService {
     private final ProductCategoryRepository productCategoryRepository;
-    private final ProductRepository productRepository;
     private final ProductQueryRepository productQueryRepository;
+    private final LikeRepository likeRepository;
+    private final ProductRepository productRepository;
+    private final ProductImageRepository productImageRepository;
+    private final ReviewRepository reviewRepository;
+
 
     // 카테고리 전체 조회
     public List<CategoryResponseDto> getAllCategories(){
@@ -50,8 +58,15 @@ public class CategoryService {
 
     // 카테고리 삭제
     public void deleteCategory(Long categoryId){
-        ProductCategory productCategory = productCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("카테고리가 존재하지 않습니다."));
-        productQueryRepository.deleteProductByCategory(categoryId);
+
+        List<Product> products = productRepository.findByCategory_CategoryId(categoryId);
+
+        for (Product product : products) {
+            Long productId = product.getProductId();
+            likeRepository.deleteByProduct_ProductId(productId);
+            productImageRepository.deleteByProduct_ProductId(productId);
+            reviewRepository.deleteByProduct_ProductId(productId);
+        }
+        productCategoryRepository.deleteById(categoryId);
     }
 }

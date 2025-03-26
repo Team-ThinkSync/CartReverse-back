@@ -38,3 +38,8 @@ spring:
 
 file:
   upload-dir: src/main/resources/static/images
+
+payment:
+  toss:
+    test_client_api_key : ${TOSS_CLIENT_API_KEY}
+    test_secret_api_key : ${TOSS_SECRET_API_KEY}
