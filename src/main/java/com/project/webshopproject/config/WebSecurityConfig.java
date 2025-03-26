@@ -116,8 +116,7 @@ public class WebSecurityConfig {
                         // ===== Products =====
                         .requestMatchers(HttpMethod.GET,
                                 "/products",
-                                "/products/{productId}",
-                                "/products/categories/{categoryId}"
+                                "/products/{productId}"
                         ).hasAnyAuthority(Grade.BASIC.getAuthority(), Grade.PREMIUM.getAuthority(), Grade.VIP.getAuthority(), Grade.ADMIN.getAuthority())
                         .requestMatchers(HttpMethod.POST, "/products").hasAuthority(Grade.ADMIN.getAuthority())
                         .requestMatchers(HttpMethod.PATCH, "/products/{productId}").hasAuthority(Grade.ADMIN.getAuthority())
@@ -146,10 +145,13 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/products/{productId}/reviews").hasAnyAuthority(Grade.BASIC.getAuthority(), Grade.PREMIUM.getAuthority(), Grade.VIP.getAuthority(), Grade.ADMIN.getAuthority())
 
                         // ===== Categories =====
-                        .requestMatchers(HttpMethod.GET, "/categories").hasAnyAuthority(Grade.BASIC.getAuthority(), Grade.PREMIUM.getAuthority(), Grade.VIP.getAuthority(), Grade.ADMIN.getAuthority())
+                        .requestMatchers(HttpMethod.GET,
+                                "/categories",
+                                "/categories/{categoryId}/products"
+                        ).hasAnyAuthority(Grade.BASIC.getAuthority(), Grade.PREMIUM.getAuthority(), Grade.VIP.getAuthority(), Grade.ADMIN.getAuthority())
                         .requestMatchers(HttpMethod.POST, "/categories").hasAuthority(Grade.ADMIN.getAuthority())
-                        .requestMatchers(HttpMethod.PATCH, "/categories").hasAuthority(Grade.ADMIN.getAuthority())
-                        .requestMatchers(HttpMethod.DELETE, "/categories").hasAuthority(Grade.ADMIN.getAuthority())
+                        .requestMatchers(HttpMethod.PATCH, "/categories/{categoryId}").hasAuthority(Grade.ADMIN.getAuthority())
+                        .requestMatchers(HttpMethod.DELETE, "/categories/{categoryId}").hasAuthority(Grade.ADMIN.getAuthority())
 
                         // ===== Default =====
                         .anyRequest().denyAll()
