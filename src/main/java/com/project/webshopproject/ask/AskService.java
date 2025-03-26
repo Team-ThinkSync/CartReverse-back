@@ -41,7 +41,7 @@ public class AskService {
     public Ask addAdminResponse(Long id, String responese) {
         Ask ask = askRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("문의가 존재하지 않습니다."));
-        ask.setAdminResponse(responese);
+        ask.setAnswer(responese);
         return askRepo.save(ask);
     }
 
