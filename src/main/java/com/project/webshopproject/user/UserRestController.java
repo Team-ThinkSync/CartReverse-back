@@ -4,24 +4,21 @@ import static com.project.webshopproject.security.JwtProvider.AUTHORIZATION_HEAD
 import static com.project.webshopproject.security.JwtProvider.REFRESHTOKEN_HEADER;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.project.webshopproject.common.RestApiResponseDto;
+import com.project.webshopproject.security.UserDetailsImpl;
 import com.project.webshopproject.user.dto.KakaoUserInfoDto;
 import com.project.webshopproject.user.dto.UserChangePasswordRequestDto;
 import com.project.webshopproject.user.dto.UserGetResponseDto;
 import com.project.webshopproject.user.dto.UserKakaoProfileUpdateRequestDto;
 import com.project.webshopproject.user.dto.UserResignRequestDto;
 import com.project.webshopproject.user.dto.UserSignupRequestDto;
-import com.project.webshopproject.common.RestApiResponseDto;
-import com.project.webshopproject.security.UserDetailsImpl;
 import com.project.webshopproject.user.dto.UserUpdateRequestDto;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +65,7 @@ public class UserRestController {
      * @param requestDto: password, newPassword, confirmNewPassword
      * @param userDetails
      */
-    @PatchMapping("/users/password")
+    @PatchMapping("/users/me/password")
     public ResponseEntity<RestApiResponseDto<String>> changePassword(
             @Valid @RequestBody final UserChangePasswordRequestDto requestDto,
             @AuthenticationPrincipal final UserDetailsImpl userDetails
