@@ -1,12 +1,11 @@
 package com.project.webshopproject.config;
 
-import com.project.webshopproject.user.entity.Grade;
 import com.project.webshopproject.security.JwtAuthenticationFilter;
 import com.project.webshopproject.security.JwtAuthorizationFilter;
 import com.project.webshopproject.security.JwtProvider;
 import com.project.webshopproject.security.UserDetailsServiceImpl;
 import com.project.webshopproject.user.UserService;
-import java.util.List;
+import com.project.webshopproject.user.entity.Grade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
@@ -152,6 +153,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/categories").hasAuthority(Grade.ADMIN.getAuthority())
                         .requestMatchers(HttpMethod.PATCH, "/categories/{categoryId}").hasAuthority(Grade.ADMIN.getAuthority())
                         .requestMatchers(HttpMethod.DELETE, "/categories/{categoryId}").hasAuthority(Grade.ADMIN.getAuthority())
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 
                         // ===== Default =====
                         .anyRequest().denyAll()

@@ -1,16 +1,18 @@
 package com.project.webshopproject.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 
 @Configuration
-@OpenAPIDefinition(
-        info = @Info(
-                title = "ECLO API 문서",
-                version = "1.0",
-                description = "ECLO API 문서"
-        )
-)
 public class SwaggerConfig {
+
+        @Bean
+        public OpenAPI customOpenAPI() {
+                return new OpenAPI()
+                        .info(new Info().title("WebShop API")
+                                .version("1.0")
+                                .description("WebShop project API documentation"));
+        }
 }
