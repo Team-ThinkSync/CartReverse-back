@@ -154,9 +154,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/categories/{categoryId}").hasAuthority(Grade.ADMIN.getAuthority())
                         .requestMatchers(HttpMethod.DELETE, "/categories/{categoryId}").hasAuthority(Grade.ADMIN.getAuthority())
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
-
-                        // ===== Default =====
-                        .anyRequest().denyAll()
+                        .anyRequest().authenticated()
         );
 
 
