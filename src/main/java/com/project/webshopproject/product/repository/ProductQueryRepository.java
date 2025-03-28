@@ -42,7 +42,7 @@ public class ProductQueryRepository {
                 product.price,
                 product.stock,
                 productImage.image,
-                likes.likesId.count()
+                likes.likesId.count().coalesce(0L)
         )).from(product)
                 .leftJoin(productImage)
                 .on(productImage.product.productId.eq(product.productId)
