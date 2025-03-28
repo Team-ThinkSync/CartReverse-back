@@ -39,7 +39,7 @@ public class PaymentController {
             @AuthenticationPrincipal final UserDetailsImpl userDetails,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(paymentService.getUserPayments(userDetails.getUser().getUserId(), pageable));
     }
 }
