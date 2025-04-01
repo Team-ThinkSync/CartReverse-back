@@ -68,17 +68,17 @@ public class ReviewRestController {
      * @param requestDto: title, content, rate
      */
     @PatchMapping("/products/{productId}/reviews/{reviewId}")
-    public ResponseEntity<RestApiResponseDto<String>> updateReview(
+    public ResponseEntity<RestApiResponseDto<ReviewResponseDto>> updateReview(
             @PathVariable Long productId,
             @PathVariable Long reviewId,
             @Valid @RequestPart("dto") ReviewRequestDto requestDto, // @Valid로 검증 활성화
             @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
             @RequestPart(value = "deleteImageIds", required = false) List<Long> deleteImageIds) {
 
-        reviewService.updateReview(reviewId, requestDto, newImages, deleteImageIds);
+        ReviewResponseDto responseDto = reviewService.updateReview(reviewId, requestDto, newImages, deleteImageIds);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(RestApiResponseDto.of("리뷰가 수정되었습니다."));
+                .body(RestApiResponseDto.of("리뷰가 수정되었습니다.", responseDto));
     }
 
     /**
