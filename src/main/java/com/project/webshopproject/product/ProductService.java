@@ -40,13 +40,13 @@ public class ProductService {
     // 전체 상품 조회
     public Page<ProductResponseDto> getAllProducts(int page, int size){
        // productQueryRepository.findAllProducts();
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "productId"));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "productId"));
         return productQueryRepository.findAllProducts(pageable);
     }
 
     //카테고리별 조회 api 추가
     public Page<ProductByCategoryResponseDto> getProductByCategory(Long categoryId, int page, int size){
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "name"));
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), size, Sort.by(Sort.Direction.DESC, "name"));
         return productQueryRepository.getProductByCategory(categoryId, pageable);
     }
 

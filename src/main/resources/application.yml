@@ -1,6 +1,6 @@
 spring:
   application:
-    name: web-shop-project
+    name: web-shop-project-back
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -15,6 +15,19 @@ spring:
         format_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  springdoc:
+    api-docs:
+      enabled: true
+      path: /v3/api-docs
+    swagger-ui:
+      enabled: true
+      path: /swagger-ui.html
+      url: /v3/api-docs
+      doc-expansion: list
+      default-model-expand-depth: -1
+      deep-linking: true
+      display-request-duration: true
 
   data:
     redis:
