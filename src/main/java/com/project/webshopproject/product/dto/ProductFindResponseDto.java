@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductFindResponseDto {
     private String productName;
-    private String productImg;
+    private List<String> productImages;
     private Integer productPrice;
     private Integer productStock;
     private String categoryType;
@@ -20,13 +20,16 @@ public class ProductFindResponseDto {
 
     @QueryProjection
     public ProductFindResponseDto(String productName, Integer productPrice, Integer productStock,
-                                  String productImg, String categoryType, String categoryName,Long likeCount) {
+                                  String categoryType, String categoryName,Long likeCount) {
         this.productName = productName;
         this.productPrice = productPrice;
         this.productStock = productStock;
-        this.productImg = productImg;
         this.categoryType = categoryType;
         this.categoryName = categoryName;
         this.likeCount = likeCount;
+    }
+
+    public void setProductImages(List<String> productImages) {
+        this.productImages = productImages;
     }
 }

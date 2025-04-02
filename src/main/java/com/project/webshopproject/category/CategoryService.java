@@ -13,6 +13,7 @@ import com.project.webshopproject.product.repository.ProductRepository;
 import com.project.webshopproject.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class CategoryService {
     }
 
     // 카테고리 삭제
+    @Transactional
     public void deleteCategory(Long categoryId){
 
         List<Product> products = productRepository.findByCategory_CategoryId(categoryId);
@@ -66,6 +68,7 @@ public class CategoryService {
             likeRepository.deleteByProduct_ProductId(productId);
             productImageRepository.deleteByProduct_ProductId(productId);
             reviewRepository.deleteByProduct_ProductId(productId);
+            productRepository.deleteById(productId);
         }
         productCategoryRepository.deleteById(categoryId);
     }

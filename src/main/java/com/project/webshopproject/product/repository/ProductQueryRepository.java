@@ -7,6 +7,7 @@ import com.project.webshopproject.product.entity.QProductImage;
 import com.project.webshopproject.product.entity.QProduct;
 import com.project.webshopproject.category.entity.QProductCategory;
 import com.project.webshopproject.review.entity.QReview;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -64,30 +65,35 @@ public class ProductQueryRepository {
 
     }
     //세부 상품 조회
-    public ProductFindResponseDto findProductById(Long productId){
-        return jpaQueryFactory
+    public ProductFindResponseDto findProductById(Long productId) {
+        ProductFindResponseDto productFindResponseDto = jpaQueryFactory
                 .select(new QProductFindResponseDto(
                         product.name,
                         product.price,
                         product.stock,
-                        productImage.image,
                         product.categoryType.stringValue(),
-                        productCategory.name,
-                        likes.likesId.count()
+                        product.category.name,
+                        likes.likesId.count().coalesce(0L)
                 ))
                 .from(product)
-                .leftJoin(product.category, productCategory)
-                .leftJoin(productImage).on(productImage.product.eq(product)) // 상품 이미지와 연관관계 매핑
                 .leftJoin(likes)
                 .on(likes.product.productId.eq(product.productId)
-                        .and(likes.likeType.eq(LikeType.PRODUCT)))  // 좋아요 테이블 조인 + 필터링
-                .groupBy(product.productId, productImage.image) // 중복 방지
-                .leftJoin(review)
-                .on(review.product.productId.eq(product.productId)
-                        .and(likes.likeType.eq(LikeType.REVIEW)))
-                .groupBy(product.productId, productImage.image)
-                .where(product.productId.eq(productId)) // 특정 상품 ID로 필터링
+                        .and(likes.likeType.eq(LikeType.PRODUCT)))
+                .where(product.productId.eq(productId))
+                .groupBy(product.productId)
                 .fetchOne();
+
+        // 이미지 리스트 따로 조회
+        List<String> images = jpaQueryFactory
+                .select(productImage.image)
+                .from(productImage)
+                .where(productImage.product.productId.eq(productId))
+                .fetch();
+
+        // DTO에 이미지 리스트 추가
+        productFindResponseDto.setProductImages(images);
+
+        return productFindResponseDto;
     }
 
     //카테 고리 별 조회
