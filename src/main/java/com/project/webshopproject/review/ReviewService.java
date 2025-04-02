@@ -1,6 +1,5 @@
 package com.project.webshopproject.review;
 
-import com.project.webshopproject.like.entity.LikeType;
 import com.project.webshopproject.like.repository.LikeRepository;
 import com.project.webshopproject.product.entity.Product;
 import com.project.webshopproject.product.repository.ProductRepository;
@@ -8,19 +7,14 @@ import com.project.webshopproject.review.dto.ReviewRequestDto;
 import com.project.webshopproject.review.dto.ReviewResponseDto;
 import com.project.webshopproject.review.entity.Review;
 import com.project.webshopproject.review.entity.ReviewImage;
+import com.project.webshopproject.s3.S3Service;
 import com.project.webshopproject.user.entity.User;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -38,9 +32,7 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
     private final ProductRepository productRepository;
     private final LikeRepository likeRepository;
-    // 이미지 저장 경로 (Docker Volume 마운트 경로)
-    @Value("${file.upload-dir}")
-    private String imageUploadDir;
+    private final S3Service s3Service;
 
     @Transactional
     public void createReview(Long productId, ReviewRequestDto requestDto, List<MultipartFile> images, User user) {
@@ -68,7 +60,7 @@ public class ReviewService {
         int orderNo = 1;
         for (MultipartFile image : images) {
             try {
-                String imageUrl = saveImage(image);
+                String imageUrl = s3Service.saveImage(image);  // 동일한 saveImage 메서드 호출
                 ReviewImage reviewImage = ReviewImage.builder()
                         .review(review)
                         .image(imageUrl)
@@ -127,20 +119,21 @@ public class ReviewService {
 
         // 삭제할 이미지 처리
         if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
-            reviewImageRepository.deleteAllById(deleteImageIds);
+            reviewImageRepository.deleteAllById(deleteImageIds);  // 기존 이미지 삭제
         }
 
         // 새 이미지 추가
         if (newImages != null && !newImages.isEmpty()) {
             int nextOrderNo = review.getReviewImages().size() + 1;
             for (MultipartFile image : newImages) {
-                String imageUrl = saveImage(image);
+                // S3에 새 이미지 업로드
+                String imageUrl = s3Service.saveImage(image);  // 변경된 부분: S3 업로드
                 ReviewImage reviewImage = ReviewImage.builder()
                         .review(review)
                         .image(imageUrl)
                         .orderNo(nextOrderNo++)
                         .build();
-                reviewImageRepository.save(reviewImage);
+                reviewImageRepository.save(reviewImage);  // 새로운 이미지 DB에 저장
             }
         }
 
@@ -166,29 +159,9 @@ public class ReviewService {
         );
     }
 
+
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }
 
-    // 실제 파일 저장 및 URL 반환 로직 (구현 필요)
-    private String saveImage(MultipartFile image) {
-        try {
-            // 이미지 파일 이름 생성 (UUID 사용)
-            String originalFilename = image.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String filename = UUID.randomUUID().toString() + extension;
-
-            // 이미지 저장 경로 생성
-            Path imagePath = Paths.get(imageUploadDir, filename);
-
-            // 이미지 저장
-            Files.copy(image.getInputStream(), imagePath);
-
-            // 이미지 URL 반환 (Docker Volume 경로 + 파일 이름)
-            return "/images/" + filename; // Controller에서 접근 가능한 URL
-        } catch (IOException e) {
-            // 파일 저장 실패 시 예외 처리
-            throw new RuntimeException("이미지 저장에 실패했습니다.", e);
-        }
-    }
 }
