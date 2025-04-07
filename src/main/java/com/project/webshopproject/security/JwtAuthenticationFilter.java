@@ -1,6 +1,7 @@
 package com.project.webshopproject.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.webshopproject.common.RestApiResponseDto;
 import com.project.webshopproject.user.dto.UserLoginRequestDto;
 import com.project.webshopproject.user.entity.User;
 import com.project.webshopproject.user.entity.UserStatus;
@@ -10,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -63,7 +66,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletResponse response, FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
-        String email = ((UserDetailsImpl) authResult.getPrincipal()).getEmail();
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
+        String email = userDetails.getEmail();
 
         // 토큰 생성
         String accessToken = jwtProvider.createAccessToken(email);
@@ -75,9 +80,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        jwtProvider.addToken(accessToken, refreshToken,
 //                jwtProvider.extractExpirationMillis(jwtProvider.substringToken(refreshToken)));
 
-        // 로그인 성공 메세지 반환
+        // 사용자 정보를 담을 DTO 생성 (이 부분은 실제 사용자 정보 모델에 맞게 조정 필요)
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("username", userDetails.getUser().getUsername()); // UserDetailsImpl에서 가져오거나 다른 방법으로 조회
+        userData.put("email", email);
+        userData.put("nickname", userDetails.getUser().getNickname()); // UserDetailsImpl에서 가져오거나 다른 방법으로 조회
+
+        // RestApiResponseDto 생성
+        RestApiResponseDto<Map<String, Object>> responseDto =
+                RestApiResponseDto.of("로그인이 되었습니다.", userData);
+
+        // JSON 응답 반환
+        response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json; charset=UTF-8");
-        response.getWriter().write(new ObjectMapper().writeValueAsString("로그인 성공!"));
+        response.getWriter().write(new ObjectMapper().writeValueAsString(responseDto));
     }
 
     @Override
